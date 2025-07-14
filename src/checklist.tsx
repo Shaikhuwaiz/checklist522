@@ -11,8 +11,8 @@ const ChecklistForm = () => {
     correctPO: "",
     correctshiptoaddress: "",
     shipDate: "",
-    shipMethod: "FedEx Ground",
-    shipVia: "Standard",
+    shipMethod: "",
+    shipVia: "",
     specialins: "",
     checkStock: "NA",
     backorder: "NA",
@@ -88,14 +88,11 @@ const ChecklistForm = () => {
     y += 10;
     doc.text(`• Check available stock: ${form.checkStock}`, 10, y);
     y += 10;
-    doc.text(
-      `• Backorders are placed on separate SO: ${form.backorder}`,
-      10,
-      y
-    );
+    doc.text(`• Backorders are placed on separate SO: ${form.backorder}`, 10, y);
     y += 10;
     doc.text(`• Price Matches ACE order copy: ${form.pricematch}`, 10, y);
     y += 10;
+
     doc.text(
       `• Correct tape/component: ${tapes
         .map((tape) => `${tape.prefix}${tape.code}`)
@@ -149,8 +146,8 @@ const ChecklistForm = () => {
         "FedEx International Priority",
         "Fedex First Overnight",
         "Fedex One Rate",
-        "Fedex Priority Overnight",
-      ],
+        "Fedex Priority Overnight"
+      ]
     },
     {
       label: "Shipping Via",
@@ -174,8 +171,8 @@ const ChecklistForm = () => {
         "Flat FedEx $1.25/unit",
         "Flat FedEx $1.75/unit",
         "Flat FedEx $2.00/unit",
-        "Flat FedEx $.50/unit",
-      ],
+        "Flat FedEx $.50/unit"
+      ]
     },
     { label: "Correct PO", id: "correctPO" },
     { label: "Correct Ship to address", id: "correctshiptoaddress" },
@@ -183,13 +180,12 @@ const ChecklistForm = () => {
     { label: "Check Available Stock", id: "checkStock", type: "select" },
     { label: "Backorders on Separate SO", id: "backorder", type: "select" },
     { label: "Price Match with ACE", id: "pricematch", type: "select" },
-    // Tape will be injected after this
     { label: "Logo Size / Tolerance", id: "logosize", type: "select" },
     { label: "Bucket Order with Band", id: "bucketorder", type: "select" },
     { label: "Component Art", id: "ComponentArt", type: "select" },
     { label: "Labels / Hang Tags", id: "hangtags", type: "select" },
-    { label: "Color PDF/Component art uploaded to NetSuite", id: "colorpdf", type: "select" },
-    { label: "OE CSR", id: "oecsr", type: "select", options: ["OWAIZ"] },
+    { label: "Color PDF Upload", id: "colorpdf", type: "select" },
+    { label: "OE CSR", id: "oecsr", type: "select", options: ["OWAIZ"] }
   ];
 
   const renderField = (field: any) => (
@@ -205,7 +201,7 @@ const ChecklistForm = () => {
           className="border border-gray-300 rounded p-2"
         >
           <option value="">-- Select --</option>
-          {(field.options ?? ["YES", "NA"]).map((opt: string) => (
+          {(field.options ?? ["NA", "YES"]).map((opt: string) => (
             <option key={opt} value={opt}>
               {opt}
             </option>
@@ -214,9 +210,7 @@ const ChecklistForm = () => {
       ) : field.type === "date" ? (
         <DatePicker
           selected={
-            (form as any)[field.id]
-              ? new Date((form as any)[field.id])
-              : null
+            (form as any)[field.id] ? new Date((form as any)[field.id]) : null
           }
           onChange={(date) =>
             setForm((prev) => ({
@@ -246,25 +240,28 @@ const ChecklistForm = () => {
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {fields.map((field, index) => {
+        {fields.map((field) => {
           const fieldElement = renderField(field);
 
-          // Inject Tapes input after "pricematch"
           if (field.id === "pricematch") {
             return (
-              <div key={field.id} className="md:col-span-2">
+              <>
                 {fieldElement}
-                <div className="mt-4">
+                <div className="md:col-span-2 mt-4">
                   <label className="font-semibold">• Correct tape/component:</label>
                   {tapes.map((tape, i) => (
                     <div key={i} className="flex gap-2 mt-2">
-                      <input
-                        type="text"
+                      <select
                         value={tape.prefix}
-                        placeholder="Prefix"
                         onChange={(e) => handleTapeChange(i, "prefix", e.target.value)}
                         className="border p-2 w-1/4 rounded"
-                      />
+                      >
+                        <option value="">Prefix</option>
+                        <option value="E">E</option>
+                        <option value="3D">3D</option>
+                        <option value="DTT">DTT</option>
+                        <option value="EP">EP</option>
+                      </select>
                       <input
                         type="text"
                         value={tape.code}
@@ -274,6 +271,7 @@ const ChecklistForm = () => {
                       />
                       {tapes.length > 1 && (
                         <button
+                          type="button"
                           onClick={() => removeTape(i)}
                           className="text-red-500"
                         >
@@ -282,11 +280,15 @@ const ChecklistForm = () => {
                       )}
                     </div>
                   ))}
-                  <button onClick={addTape} className="text-blue-600 mt-2">
+                  <button
+                    type="button"
+                    onClick={addTape}
+                    className="text-blue-600 mt-2"
+                  >
                     ➕ Add Tape
                   </button>
                 </div>
-              </div>
+              </>
             );
           }
 
