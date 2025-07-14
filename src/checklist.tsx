@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import jsPDF from "jspdf";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { format } from "date-fns";
+import { format, formatDate } from "date-fns";
 
 const ChecklistForm = () => {
   const [form, setForm] = useState({
@@ -26,7 +26,9 @@ const ChecklistForm = () => {
     oecsr: "",
   });
 
-  const [tapes, setTapes] = useState([{ prefix: "", code: "" }]);
+  const [tapes, setTapes] = useState<Array<{ [key: string]: string }>>([
+    { prefix: "", code: "" },
+  ]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -52,36 +54,43 @@ const ChecklistForm = () => {
 
     doc.setFontSize(12);
     doc.text(`• SO #: ${form.SO}`, 10, 20);
-    doc.text(`• Correct Order #: ${form.CorrectOrder}`, 10, 30);
-    doc.text(`• Correct PO #: ${form.correctPO}`, 10, 40);
-    doc.text(`• Shipping Method: ${form.shipMethod}`, 10, 50);
-    doc.text(`• Shipping Via: ${form.shipVia}`, 10, 60);
-    doc.text(`• Correct Ship Date: ${form.shipDate}`, 10, 70);
-    doc.text(`• Correct Ship To Address: ${form.correctshiptoaddress}`, 10, 80);
-    doc.text(`• Special Instructions: ${form.specialins}`, 10, 90);
-    doc.text(`• Check Available Stock: ${form.checkStock}`, 10, 100);
-    doc.text(`• Backorders on separate SO: ${form.backorder}`, 10, 110);
-    doc.text(`• Price Matches ACE: ${form.pricematch}`, 10, 120);
+
+    doc.text("ORDER ENTRY", 10, 30);
+    doc.text(`• Correct Order #: ${form.CorrectOrder}`, 10, 40);
+    doc.text(`• Correct PO: ${form.correctPO}`, 10, 50);
+    doc.text(`• Correct Ship To Address: ${form.correctshiptoaddress}`, 10, 60);
+    doc.text(
+      `• Correct Ship Date: ${
+        form.shipDate ? format(new Date(form.shipDate), "MM-dd-yyyy") : "N/A"
+      }`,
+      10,
+      70
+    );
+    doc.text(`• Shipping Method: ${form.shipMethod}`, 10, 80);
+    doc.text(`• Shipping Via: ${form.shipVia}`, 10, 90);
+    doc.text(`• Special Instructions: ${form.specialins}`, 10, 100);
+    doc.text(`• Check Available Stock: ${form.checkStock}`, 10, 110);
+    doc.text(`• Backorders on separate SO: ${form.backorder}`, 10, 120);
+    doc.text(`• Price Matches ACE: ${form.pricematch}`, 10, 130);
 
     const combinedTapes = tapes
       .filter((tape) => tape.prefix || tape.code)
       .map((tape) => `${tape.prefix}${tape.code}`)
       .join(" / ");
-    doc.text(`• Tape/Component: ${combinedTapes}`, 10, 130);
-    doc.text(`• Logo Size / Tolerance for Item: ${form.logosize}`, 10, 140);
-    doc.text(`• Bucket order with band: ${form.bucketorder}`, 10, 150);
-    doc.text(`• Component Art: ${form.ComponentArt}`, 10, 160);
-    doc.text(`• Labels / Hang Tags: ${form.hangtags}`, 10, 170);
-    doc.text(`• Color PDF/Component art uploaded: ${form.colorpdf}`, 10, 180);
+    doc.text(`• Tape/Component: ${combinedTapes}`, 10, 140);
 
-    // Now define and use doc here
-    const text = `* OE CSR ${form.oecsr}`;
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const textWidth = doc.getTextWidth(text);
-    const x = (pageWidth - textWidth) / 2;
-    doc.text(text, x, 190);
+    doc.text(`• Logo Size / Tolerance for Item: ${form.logosize}`, 10, 150);
+    doc.text(`• Bucket order with band: ${form.bucketorder}`, 10, 160);
+    doc.text(`• Component Art: ${form.ComponentArt}`, 10, 170);
+    doc.text(`• Labels / Hang Tags: ${form.hangtags}`, 10, 180);
+    doc.text(
+      `• Color PDF/Component art uploaded to NetSuite: ${form.colorpdf}`,
+      10,
+      190
+    );
 
-    doc.save(`Checklist_CC_${form.SO}.pdf`);
+    doc.text(`* OE CSR ${form.oecsr}`, 10, 190);
+    doc.save(`Checklist_CC#_${form.SO}.pdf`);
   };
 
   return (
@@ -169,10 +178,7 @@ const ChecklistForm = () => {
             )}
           </div>
         ))}
-        <button
-          onClick={addTape}
-          className="mt-2 text-blue-600 hover:underline"
-        >
+        <button onClick={addTape} className="mt-2 text-blue-600 hover:bg-blue">
           ➕ Add Tape
         </button>
       </div>
