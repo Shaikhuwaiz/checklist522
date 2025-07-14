@@ -1,19 +1,18 @@
-// Checklist.tsx
-import React, { useState } from "react";
+import { useState } from "react";
 import jsPDF from "jspdf";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { format, formatDate } from "date-fns";
+import { format } from "date-fns";
 
 const ChecklistForm = () => {
   const [form, setForm] = useState({
     SO: "",
     CorrectOrder: "",
+    correctPO: "",
+    correctshiptoaddress: "",
     shipDate: "",
     shipMethod: "",
     shipVia: "",
-    correctPO: "",
-    correctshiptoaddress: "",
     specialins: "",
     checkStock: "NA",
     backorder: "NA",
@@ -23,12 +22,10 @@ const ChecklistForm = () => {
     ComponentArt: "",
     hangtags: "NA",
     colorpdf: "",
-    oecsr: "",
+    oecsr: "OWAIZ",
   });
 
-  const [tapes, setTapes] = useState<Array<{ [key: string]: string }>>([
-    { prefix: "", code: "" },
-  ]);
+  const [tapes, setTapes] = useState<Tape[]>([{ prefix: "", code: "" }]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -36,102 +33,187 @@ const ChecklistForm = () => {
     const { id, value } = e.target;
     setForm((prev) => ({ ...prev, [id]: value }));
   };
+  type Tape = {
+    prefix: string;
+    code: string;
+  };
 
-  const handleTapeChange = (index: number, field: string, value: string) => {
+  const handleTapeChange = (
+    index: number,
+    field: keyof Tape,
+    value: string
+  ) => {
     const updated = [...tapes];
-    updated[index][field] = value;
+    updated[index] = {
+      ...updated[index],
+      [field]: value,
+    };
     setTapes(updated);
   };
 
   const addTape = () => setTapes([...tapes, { prefix: "", code: "" }]);
-  const removeTape = (index: number) =>
-    setTapes(tapes.filter((_, i) => i !== index));
-
+  const removeTape = (index: number) => {
+    const updated = tapes.filter((_, i) => i !== index);
+    setTapes(updated);
+  };
   const generatePDF = () => {
     const doc = new jsPDF();
-    doc.setFontSize(14);
-    doc.text("Outsourcing OE Checklist – DOMESTIC", 10, 10);
+    let y = 20;
+
+    doc.setFontSize(16);
+    doc.text("Outsourcing OE Checklist – DOMESTIC", 10, y);
+    y += 10;
 
     doc.setFontSize(12);
-    doc.text(`• SO #: ${form.SO}`, 10, 20);
+    doc.text(`SO #: ${form.SO}`, 10, y);
+    y += 10;
+    doc.text("ORDER ENTRY", 10, y);
+    y += 10;
 
-    doc.text("ORDER ENTRY", 10, 30);
-    doc.text(`• Correct Order #: ${form.CorrectOrder}`, 10, 40);
-    doc.text(`• Correct PO: ${form.correctPO}`, 10, 50);
-    doc.text(`• Correct Ship To Address: ${form.correctshiptoaddress}`, 10, 60);
+    doc.text(`• Correct Order #: ${form.CorrectOrder}`, 10, y);
+    y += 10;
+    doc.text(`• Correct PO: ${form.correctPO}`, 10, y);
+    y += 10;
+    doc.text(`• Correct Ship to address: ${form.correctshiptoaddress}`, 10, y);
+    y += 10;
+    doc.text(`• Correct Ship Date: ${form.shipDate}`, 10, y);
+    y += 10;
+    doc.text(`• Correct Ship Method & Terms: ${form.shipMethod}`, 10, y);
+    y += 10;
+    doc.text(`• Shipping Via: ${form.shipVia}`, 10, y);
+    y += 10;
+    doc.text(`• Special Instructions: ${form.specialins}`, 10, y);
+    y += 10;
+    doc.text(`• Check available stock: ${form.checkStock}`, 10, y);
+    y += 10;
     doc.text(
-      `• Correct Ship Date: ${
-        form.shipDate ? format(new Date(form.shipDate), "MM-dd-yyyy") : "N/A"
-      }`,
+      `• Backorders are placed on separate SO: ${form.backorder}`,
       10,
-      70
+      y
     );
-    doc.text(`• Shipping Method: ${form.shipMethod}`, 10, 80);
-    doc.text(`• Shipping Via: ${form.shipVia}`, 10, 90);
-    doc.text(`• Special Instructions: ${form.specialins}`, 10, 100);
-    doc.text(`• Check Available Stock: ${form.checkStock}`, 10, 110);
-    doc.text(`• Backorders on separate SO: ${form.backorder}`, 10, 120);
-    doc.text(`• Price Matches ACE: ${form.pricematch}`, 10, 130);
+    y += 10;
+    doc.text(`• Price Matches ACE order copy: ${form.pricematch}`, 10, y);
+    y += 10;
 
-    const combinedTapes = tapes
-      .filter((tape) => tape.prefix || tape.code)
-      .map((tape) => `${tape.prefix}${tape.code}`)
-      .join(" / ");
-    doc.text(`• Tape/Component: ${combinedTapes}`, 10, 140);
-
-    doc.text(`• Logo Size / Tolerance for Item: ${form.logosize}`, 10, 150);
-    doc.text(`• Bucket order with band: ${form.bucketorder}`, 10, 160);
-    doc.text(`• Component Art: ${form.ComponentArt}`, 10, 170);
-    doc.text(`• Labels / Hang Tags: ${form.hangtags}`, 10, 180);
+    doc.text(
+      `• Correct tape/component: ${tapes
+        .map((tape) => `${tape.prefix}${tape.code}`)
+        .join(" / ")}`,
+      10,
+      y
+    );
+    y += 10;
+    doc.text(`• Logo Size / Tolerance for Item: ${form.logosize}`, 10, y);
+    y += 10;
+    doc.text(`• Bucket order with band: ${form.bucketorder}`, 10, y);
+    y += 10;
+    doc.text(`• Component Art: ${form.ComponentArt}`, 10, y);
+    y += 10;
+    doc.text(`• Labels / Hang Tags: ${form.hangtags}`, 10, y);
+    y += 10;
     doc.text(
       `• Color PDF/Component art uploaded to NetSuite: ${form.colorpdf}`,
       10,
-      190
+      y
     );
+    y += 20;
 
-    doc.text(`* OE CSR ${form.oecsr}`, 10, 190);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const text = `* OE CSR ${form.oecsr}`;
+    const textWidth = doc.getTextWidth(text);
+    const x = (pageWidth - textWidth) / 2;
+    doc.text(text, x, y);
+
     doc.save(`Checklist_CC#_${form.SO}.pdf`);
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white p-6 shadow-md rounded-md mt-10">
-      <h2 className="text-xl font-bold mb-6 text-center text-gray-800">
+    <div className="max-w-3xl mx-auto p-6 bg-white shadow rounded-md">
+      <h2 className="text-xl font-bold mb-4">
         Outsourcing OE Checklist – DOMESTIC
       </h2>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Input fields */}
         {[
           { label: "SO #", id: "SO" },
           { label: "Correct Order #", id: "CorrectOrder" },
+          { label: "Correct Ship Date", id: "shipDate", type: "date" },
+          { label: "Shipping Method & Terms", id: "shipMethod" },
           { label: "Correct PO", id: "correctPO" },
-          { label: "Shipping Method", id: "shipMethod" },
+          { label: "Correct Ship to address", id: "correctshiptoaddress" },
+          { label: "Special Instructions", id: "specialins", type: "select" },
           { label: "Shipping Via", id: "shipVia" },
-          { label: "Ship To Address", id: "correctshiptoaddress" },
-          { label: "Price Match", id: "pricematch" },
-          { label: "Logo Size", id: "logosize" },
-          { label: "Bucket Order", id: "bucketorder" },
-          { label: "Component Art", id: "ComponentArt" },
-          { label: "Hangtags", id: "hangtags" },
-          { label: "Color PDF", id: "colorpdf" },
-          { label: "OE CSR", id: "oecsr" },
+
+          { label: "Check Available Stock", id: "checkStock", type: "select" },
+          {
+            label: "Backorders on Separate SO",
+            id: "backorder",
+            type: "select",
+          },
+          { label: "Price Match with ACE", id: "pricematch", type: "select" },
+          { label: "Logo Size / Tolerance", id: "logosize", type: "select" },
+          {
+            label: "Bucket Order with Band",
+            id: "bucketorder",
+            type: "select",
+          },
+          { label: "Component Art", id: "ComponentArt", type: "select" },
+          { label: "Labels / Hang Tags", id: "hangtags", type: "select" },
+          {
+            label: "Color PDF/Component art uploaded to NetSuite",
+            id: "colorpdf",
+            type: "select",
+          },
+          { label: "OE CSR", id: "oecsr", type: "select", options: ["OWAIZ"] },
         ].map((field) => (
           <div key={field.id} className="flex flex-col">
-            <label htmlFor={field.id} className="font-semibold text-sm mb-1">
+            <label htmlFor={field.id} className="text-sm font-medium mb-1">
               {field.label}
             </label>
-            <input
-              id={field.id}
-              value={(form as any)[field.id]}
-              onChange={handleChange}
-              className="border p-2 rounded-md"
-            />
+            {field.type === "select" ? (
+              <select
+                id={field.id}
+                value={(form as any)[field.id]}
+                onChange={handleChange}
+                className="border border-gray-300 rounded p-2"
+              >
+                <option value="">-- Select --</option>
+                {(field.options ?? ["NA", "YES"]).map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+            ) : field.type === "date" ? (
+              <DatePicker
+                selected={
+                  (form as any)[field.id]
+                    ? new Date((form as any)[field.id])
+                    : null
+                }
+                onChange={(date) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    [field.id]: date ? format(date, "MM-dd-yyyy") : "",
+                  }))
+                }
+                dateFormat="MM-dd-yyyy"
+                placeholderText="Select Date"
+                className="border border-gray-300 rounded p-2"
+              />
+            ) : (
+              <input
+                id={field.id}
+                value={(form as any)[field.id]}
+                onChange={handleChange}
+                className="border border-gray-300 rounded p-2"
+              />
+            )}
           </div>
         ))}
 
-        {/* Date */}
+        {/* Ship Date */}
         <div className="flex flex-col">
-          <label className="font-semibold text-sm mb-1">Ship Date</label>
+          <label className="text-sm font-medium mb-1">Ship Date</label>
           <DatePicker
             selected={form.shipDate ? new Date(form.shipDate) : null}
             onChange={(date) =>
@@ -141,17 +223,17 @@ const ChecklistForm = () => {
               }))
             }
             dateFormat="MM-dd-yyyy"
-            placeholderText="Select Date"
-            className="border p-2 rounded-md"
+            placeholderText="Select Ship Date"
+            className="border border-gray-300 rounded p-2"
           />
         </div>
       </div>
 
-      {/* Tape List */}
+      {/* Tapes */}
       <div className="mt-6">
         <label className="font-semibold">Tape/Component List:</label>
         {tapes.map((tape, index) => (
-          <div key={index} className="flex gap-2 my-2">
+          <div key={index} className="flex gap-2 mt-2">
             <input
               type="text"
               value={tape.prefix}
@@ -159,35 +241,34 @@ const ChecklistForm = () => {
               onChange={(e) =>
                 handleTapeChange(index, "prefix", e.target.value)
               }
-              className="border p-2 w-1/4 rounded-md"
+              className="border p-2 w-1/4 rounded"
             />
             <input
               type="text"
               value={tape.code}
               placeholder="Code"
               onChange={(e) => handleTapeChange(index, "code", e.target.value)}
-              className="border p-2 w-1/2 rounded-md"
+              className="border p-2 w-2/4 rounded"
             />
             {tapes.length > 1 && (
               <button
                 onClick={() => removeTape(index)}
-                className="text-red-600 hover:underline"
+                className="text-red-500"
               >
                 ❌
               </button>
             )}
           </div>
         ))}
-        <button onClick={addTape} className="mt-2 text-blue-600 hover:bg-blue">
+        <button onClick={addTape} className="text-blue-600 mt-2">
           ➕ Add Tape
         </button>
       </div>
 
-      {/* Download Button */}
-      <div className="text-center mt-8">
+      <div className="text-center mt-6">
         <button
           onClick={generatePDF}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md"
+          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
         >
           📄 Download Checklist CC# {form.SO}
         </button>
