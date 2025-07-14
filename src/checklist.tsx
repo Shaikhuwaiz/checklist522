@@ -150,40 +150,7 @@ const ChecklistForm = () => {
             type: "select",
           },
           { label: "Price Match with ACE", id: "pricematch", type: "select" },
-          <div className="mt-6">
-          <label className="font-semibold">Tape/Component List:</label>
-          {tapes.map((tape, index) => (
-            <div key={index} className="flex gap-2 mt-2">
-              <input
-                type="text"
-                value={tape.prefix}
-                placeholder="Prefix"
-                onChange={(e) =>
-                  handleTapeChange(index, "prefix", e.target.value)
-                }
-                className="border p-2 w-1/4 rounded"
-              />
-              <input
-                type="text"
-                value={tape.code}
-                placeholder="Code"
-                onChange={(e) => handleTapeChange(index, "code", e.target.value)}
-                className="border p-2 w-2/4 rounded"
-              />
-              {tapes.length > 1 && (
-                <button
-                  onClick={() => removeTape(index)}
-                  className="text-red-500"
-                >
-                  ❌
-                </button>
-              )}
-            </div>
-          ))}
-          <button onClick={addTape} className="text-blue-600 mt-2">
-            ➕ Add Tape
-          </button>
-        </div>
+          
           { label: "Logo Size / Tolerance", id: "logosize", type: "select" },
           {
             label: "Bucket Order with Band",
