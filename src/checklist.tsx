@@ -210,23 +210,6 @@ const ChecklistForm = () => {
             )}
           </div>
         ))}
-
-        {/* Ship Date */}
-        <div className="flex flex-col">
-          <label className="text-sm font-medium mb-1">Ship Date</label>
-          <DatePicker
-            selected={form.shipDate ? new Date(form.shipDate) : null}
-            onChange={(date) =>
-              setForm((prev) => ({
-                ...prev,
-                shipDate: date ? format(date, "MM-dd-yyyy") : "",
-              }))
-            }
-            dateFormat="MM-dd-yyyy"
-            placeholderText="Select Ship Date"
-            className="border border-gray-300 rounded p-2"
-          />
-        </div>
       </div>
 
       {/* Tapes */}
