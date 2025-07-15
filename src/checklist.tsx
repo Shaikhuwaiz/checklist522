@@ -240,9 +240,9 @@ const ChecklistForm = () => {
   );
 
   return (
-    <div className="min-h-screen bg-black bg-stars flex items-center justify-center p-6">
-      <div className="w-full max-w-3xl bg-white shadow-lg rounded-md p-6">
-        <h2 className="text-xl font-bold mb-4 text-center text-gray-900">
+    <div className="bg-black bg-stars min-h-screen">
+      <div className="relative z-10 max-w-3xl mx-auto p-6 bg-white/30 backdrop-blur-md shadow-lg rounded-md">
+        <h2 className="text-xl font-bold mb-4 text-center">
           Outsourcing OE Checklist – DOMESTIC
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
