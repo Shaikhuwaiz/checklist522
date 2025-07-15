@@ -127,6 +127,27 @@ const ChecklistForm = () => {
     doc.save(`Checklist CC# ${form.SO}.pdf`);
   };
 
+  setForm({
+    SO: "",
+    CorrectOrder: "",
+    correctPO: "",
+    correctshiptoaddress: "",
+    shipDate: "",
+    shipMethod: "FedEx Ground",
+    shipVia: "Standard",
+    specialins: "",
+    checkStock: "NA",
+    backorder: "NA",
+    pricematch: "",
+    logosize: "NA",
+    bucketorder: "NA",
+    ComponentArt: "",
+    hangtags: "NA",
+    colorpdf: "",
+    oecsr: "OWAIZ",
+  });
+  setTapes([{ prefix: "", code: "" }]);  
+
   const fields = [
     { label: "SO #", id: "SO" },
     { label: "Correct Order #", id: "CorrectOrder" },
