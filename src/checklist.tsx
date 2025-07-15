@@ -63,7 +63,11 @@ const ChecklistForm = () => {
     let y = 20;
 
     doc.setFontSize(16);
-    doc.text("Outsourcing OE Checklist – DOMESTIC", 10, y);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const title = "Outsourcing OE Checklist – DOMESTIC";
+    const titleWidth = doc.getTextWidth(title);
+    const centerX = (pageWidth - titleWidth) / 2;
+    doc.text(title, centerX, y);
     y += 10;
 
     doc.setFontSize(12);
@@ -118,15 +122,9 @@ const ChecklistForm = () => {
       10,
       y
     );
-    y += 20;
-
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const text = `* OE CSR ${form.oecsr}`;
-    const textWidth = doc.getTextWidth(text);
-    const x = (pageWidth - textWidth) / 2;
-    doc.text(text, x, y);
-
-    doc.save(`Checklist_CC#_${form.SO}.pdf`);
+    y += 10;
+    doc.text(`* OE CSR ${form.oecsr}`, 10, y);
+    doc.save(`Checklist CC# ${form.SO}.pdf`);
   };
 
   const fields = [
@@ -188,7 +186,11 @@ const ChecklistForm = () => {
     { label: "Bucket Order with Band", id: "bucketorder", type: "select" },
     { label: "Component Art", id: "ComponentArt", type: "select" },
     { label: "Labels / Hang Tags", id: "hangtags", type: "select" },
-    { label: "Color PDF Upload", id: "colorpdf", type: "select" },
+    {
+      label: "Color PDF/Component art uploaded to NetSuite",
+      id: "colorpdf",
+      type: "select",
+    },
     { label: "OE CSR", id: "oecsr", type: "select", options: ["OWAIZ"] },
   ];
 
@@ -205,7 +207,7 @@ const ChecklistForm = () => {
           className="border border-gray-300 rounded p-2"
         >
           <option value="">-- Select --</option>
-          {(field.options ?? ["NA", "YES"]).map((opt: string) => (
+          {(field.options ?? ["YES", "NA"]).map((opt: string) => (
             <option key={opt} value={opt}>
               {opt}
             </option>
@@ -238,81 +240,82 @@ const ChecklistForm = () => {
   );
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow rounded-md">
-      <h2 className="text-xl font-bold mb-4">
-        Outsourcing OE Checklist – DOMESTIC
-      </h2>
+    <div className="min-h-screen bg-black bg-stars flex items-center justify-center p-6">
+      <div className="w-full max-w-3xl bg-white shadow-lg rounded-md p-6">
+        <h2 className="text-xl font-bold mb-4 text-center text-gray-900">
+          Outsourcing OE Checklist – DOMESTIC
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {fields.map((field) => {
+            const fieldElement = renderField(field);
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {fields.map((field) => {
-          const fieldElement = renderField(field);
-
-          if (field.id === "pricematch") {
-            return (
-              <>
-                {fieldElement}
-                <div className="md:col-span-2 mt-4">
-                  <label className="font-semibold">
-                    • Correct tape/component:
-                  </label>
-                  {tapes.map((tape, i) => (
-                    <div key={i} className="flex gap-2 mt-2">
-                      <select
-                        value={tape.prefix}
-                        onChange={(e) =>
-                          handleTapeChange(i, "prefix", e.target.value)
-                        }
-                        className="border p-2 w-1/4 rounded"
-                      >
-                        <option value="">Prefix</option>
-                        <option value="E">E</option>
-                        <option value="3D">3D</option>
-                        <option value="DTT">DTT</option>
-                        <option value="EP">EP</option>
-                      </select>
-                      <input
-                        type="text"
-                        value={tape.code}
-                        placeholder="Code"
-                        onChange={(e) =>
-                          handleTapeChange(i, "code", e.target.value)
-                        }
-                        className="border p-2 w-2/4 rounded"
-                      />
-                      {tapes.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeTape(i)}
-                          className="text-red-500"
+            if (field.id === "pricematch") {
+              return (
+                <>
+                  {fieldElement}
+                  <div className="md:col-span-2 mt-4">
+                    <label className="font-semibold">
+                      • Correct tape/component:
+                    </label>
+                    {tapes.map((tape, i) => (
+                      <div key={i} className="flex gap-2 mt-2">
+                        <select
+                          value={tape.prefix}
+                          onChange={(e) =>
+                            handleTapeChange(i, "prefix", e.target.value)
+                          }
+                          className="border p-2 w-1/4 rounded"
                         >
-                          ❌
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={addTape}
-                    className="text-blue-600 mt-2"
-                  >
-                    ➕ Add Tape
-                  </button>
-                </div>
-              </>
-            );
-          }
+                          <option value="">Prefix</option>
+                          <option value="E">E</option>
+                          <option value="3D">3D</option>
+                          <option value="DTT">DTT</option>
+                          <option value="EP">EP</option>
+                        </select>
+                        <input
+                          type="text"
+                          value={tape.code}
+                          placeholder="Code"
+                          onChange={(e) =>
+                            handleTapeChange(i, "code", e.target.value)
+                          }
+                          className="border p-2 w-2/4 rounded"
+                        />
+                        {tapes.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeTape(i)}
+                            className="text-red-500"
+                          >
+                            ❌
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={addTape}
+                      className="text-blue-600 mt-2"
+                    >
+                      ➕ Add Tape
+                    </button>
+                  </div>
+                </>
+              );
+            }
 
-          return fieldElement;
-        })}
-      </div>
+            return fieldElement;
+          })}
+        </div>
 
-      <div className="text-center mt-6">
-        <button
-          onClick={generatePDF}
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-        >
-          📄 Download Checklist CC# {form.SO}
-        </button>
+        <div className="text-center mt-6">
+          <button
+            onClick={generatePDF}
+            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+          >
+            📄 Download Checklist CC# {form.SO}
+          </button>
+        </div>
       </div>
     </div>
   );
