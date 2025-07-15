@@ -11,8 +11,8 @@ const ChecklistForm = () => {
     correctPO: "",
     correctshiptoaddress: "",
     shipDate: "",
-    shipMethod: "",
-    shipVia: "",
+    shipMethod: "FedEx Ground",
+    shipVia: "Standard",
     specialins: "",
     checkStock: "NA",
     backorder: "NA",
@@ -88,7 +88,11 @@ const ChecklistForm = () => {
     y += 10;
     doc.text(`• Check available stock: ${form.checkStock}`, 10, y);
     y += 10;
-    doc.text(`• Backorders are placed on separate SO: ${form.backorder}`, 10, y);
+    doc.text(
+      `• Backorders are placed on separate SO: ${form.backorder}`,
+      10,
+      y
+    );
     y += 10;
     doc.text(`• Price Matches ACE order copy: ${form.pricematch}`, 10, y);
     y += 10;
@@ -146,8 +150,8 @@ const ChecklistForm = () => {
         "FedEx International Priority",
         "Fedex First Overnight",
         "Fedex One Rate",
-        "Fedex Priority Overnight"
-      ]
+        "Fedex Priority Overnight",
+      ],
     },
     {
       label: "Shipping Via",
@@ -171,8 +175,8 @@ const ChecklistForm = () => {
         "Flat FedEx $1.25/unit",
         "Flat FedEx $1.75/unit",
         "Flat FedEx $2.00/unit",
-        "Flat FedEx $.50/unit"
-      ]
+        "Flat FedEx $.50/unit",
+      ],
     },
     { label: "Correct PO", id: "correctPO" },
     { label: "Correct Ship to address", id: "correctshiptoaddress" },
@@ -185,7 +189,7 @@ const ChecklistForm = () => {
     { label: "Component Art", id: "ComponentArt", type: "select" },
     { label: "Labels / Hang Tags", id: "hangtags", type: "select" },
     { label: "Color PDF Upload", id: "colorpdf", type: "select" },
-    { label: "OE CSR", id: "oecsr", type: "select", options: ["OWAIZ"] }
+    { label: "OE CSR", id: "oecsr", type: "select", options: ["OWAIZ"] },
   ];
 
   const renderField = (field: any) => (
@@ -248,12 +252,16 @@ const ChecklistForm = () => {
               <>
                 {fieldElement}
                 <div className="md:col-span-2 mt-4">
-                  <label className="font-semibold">• Correct tape/component:</label>
+                  <label className="font-semibold">
+                    • Correct tape/component:
+                  </label>
                   {tapes.map((tape, i) => (
                     <div key={i} className="flex gap-2 mt-2">
                       <select
                         value={tape.prefix}
-                        onChange={(e) => handleTapeChange(i, "prefix", e.target.value)}
+                        onChange={(e) =>
+                          handleTapeChange(i, "prefix", e.target.value)
+                        }
                         className="border p-2 w-1/4 rounded"
                       >
                         <option value="">Prefix</option>
@@ -266,7 +274,9 @@ const ChecklistForm = () => {
                         type="text"
                         value={tape.code}
                         placeholder="Code"
-                        onChange={(e) => handleTapeChange(i, "code", e.target.value)}
+                        onChange={(e) =>
+                          handleTapeChange(i, "code", e.target.value)
+                        }
                         className="border p-2 w-2/4 rounded"
                       />
                       {tapes.length > 1 && (
