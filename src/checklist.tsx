@@ -349,7 +349,7 @@ const ChecklistForm = () => {
                         <input
                           type="text"
                           value={tape.code}
-                          placeholder="Code"
+                          placeholder="Tape"
                           onChange={(e) =>
                             handleTapeChange(i, "code", e.target.value)
                           }
