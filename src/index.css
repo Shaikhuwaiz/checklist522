@@ -2,9 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
-/* No custom .bg-stars needed if you're going full gradient */
-body {
-  margin: 0;
-  padding: 0;
-  background-color: #0f0c29; /* Optional: fallback bg if gradient fails */
+/* Twinkling stars */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* Slight floating drift for some stars */
+@keyframes starDrift {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+
+/* Parallax nebula movement */
+@keyframes nebulaParallax {
+  0%   { transform: translate(0%, 0%) scale(1); }
+  50%  { transform: translate(-2%, -3%) scale(1.05); }
+  100% { transform: translate(0%, 0%) scale(1); }
+}
+
+/* Comet animation */
+@keyframes cometTrail {
+  0% {
+    transform: translateX(-200%) translateY(-50%) rotate(45deg);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(150%) translateY(100%) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+@layer utilities {
+  .bg-stars {
+    @apply relative bg-black overflow-hidden;
+  }
+
+  .star {
+    @apply absolute bg-white rounded-full;
+    animation: twinkle 2s infinite ease-in-out, starDrift 5s infinite ease-in-out;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .nebula {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 300vw;
+    height: 300vh;
+    background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.03), transparent 60%),
+                radial-gradient(circle at 70% 60%, rgba(128, 0, 128, 0.04), transparent 60%),
+                radial-gradient(circle at 50% 20%, rgba(0, 255, 255, 0.04), transparent 60%),
+                radial-gradient(circle at 60% 80%, rgba(255, 0, 255, 0.03), transparent 70%);
+    mix-blend-mode: screen;
+    animation: nebulaParallax 120s ease-in-out infinite;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .comet {
+    position: absolute;
+    top: 20%;
+    left: -50%;
+    width: 150px;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(255,255,255,1), transparent);
+    transform: rotate(45deg);
+    animation: cometTrail 15s linear infinite;
+    z-index: 0;
+    pointer-events: none;
+  }
 }

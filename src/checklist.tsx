@@ -1,8 +1,52 @@
-import { useState } from "react";
+
 import jsPDF from "jspdf";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import { useMemo, useEffect, useState } from "react";
+
+const Stars = () => {
+  const [pageHeight, setPageHeight] = useState(0);
+
+  useEffect(() => {
+    // Set the total document height once on mount
+    setPageHeight(document.body.scrollHeight);
+  }, []);
+
+  const stars = useMemo(() => {
+    return Array.from({ length: 700 }, (_, i) => {
+      const top = Math.floor(Math.random() * pageHeight); // not just window.innerHeight
+      const left = Math.floor(Math.random() * window.innerWidth);
+      const duration = 2 + Math.random() * 3;
+      const delay = Math.random() * 5;
+      const size = Math.random() * 0.3+0.6;
+
+      return (
+        <div
+          key={i}
+          style={{
+            position: "absolute",
+            top: `${top}px`,
+            left: `${left}px`,
+            width: `${size}px`,
+            height: `${size}px`,
+            backgroundColor: "white",
+            borderRadius: "9999px",
+            animation: "twinkle 2s infinite ease-in-out",
+            animationDuration: `${duration}s`,
+            animationDelay: `${delay}s`,
+            opacity: 0.8,
+            pointerEvents: "none",
+            zIndex: 0,
+          }}
+        />
+      );
+    });
+  }, [pageHeight]); // recalculate if page height changes
+
+  return <>{stars}</>;
+};
+
 
 const ChecklistForm = () => {
   const [form, setForm] = useState({
@@ -125,28 +169,30 @@ const ChecklistForm = () => {
     y += 10;
     doc.text(`* OE CSR ${form.oecsr}`, 10, y);
     doc.save(`Checklist CC# ${form.SO}.pdf`);
-  };
 
-  setForm({
-    SO: "",
-    CorrectOrder: "",
-    correctPO: "",
-    correctshiptoaddress: "",
-    shipDate: "",
-    shipMethod: "FedEx Ground",
-    shipVia: "Standard",
-    specialins: "",
-    checkStock: "NA",
-    backorder: "NA",
-    pricematch: "",
-    logosize: "NA",
-    bucketorder: "NA",
-    ComponentArt: "",
-    hangtags: "NA",
-    colorpdf: "",
-    oecsr: "OWAIZ",
-  });
-  setTapes([{ prefix: "", code: "" }]);  
+    // ✅ Reset the form after download
+    setForm({
+      SO: "",
+      CorrectOrder: "",
+      correctPO: "",
+      correctshiptoaddress: "",
+      shipDate: "",
+      shipMethod: "FedEx Ground",
+      shipVia: "Standard",
+      specialins: "",
+      checkStock: "NA",
+      backorder: "NA",
+      pricematch: "",
+      logosize: "NA",
+      bucketorder: "NA",
+      ComponentArt: "",
+      hangtags: "NA",
+      colorpdf: "",
+      oecsr: "OWAIZ",
+    });
+
+    setTapes([{ prefix: "", code: "" }]);
+  };
 
   const fields = [
     { label: "SO #", id: "SO" },
@@ -237,7 +283,9 @@ const ChecklistForm = () => {
       ) : field.type === "date" ? (
         <DatePicker
           selected={
-            (form as any)[field.id] ? new Date((form as any)[field.id]) : null
+            (form as any)[field.id]
+              ? new Date((form as any)[field.id])
+              : null
           }
           onChange={(date) =>
             setForm((prev) => ({
@@ -261,8 +309,13 @@ const ChecklistForm = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0f0c29] via-[#302b63] to-[#24243e] flex items-center justify-center p-4">
-      <div className="w-full max-w-xl bg-white p-6 rounded-2xl shadow-2xl">
+    <div className="min-h-screen bg-stars flex items-center justify-center p-4">
+    <div className="nebula" />
+    <div className="space-dust" />
+<div className="planet" />
+      <Stars />
+    <div className=" relative z-10 w-full max-w-xl bg-white p-6 rounded-2xl shadow-2xl">
+      
         <h2 className="text-xl font-bold mb-4 text-center text-gray-800">
           Outsourcing OE Checklist – DOMESTIC
         </h2>
