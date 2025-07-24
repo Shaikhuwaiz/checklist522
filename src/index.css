@@ -2,79 +2,86 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Twinkling stars */
-@keyframes twinkle {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
-/* Slight floating drift for some stars */
-@keyframes starDrift {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-  100% { transform: translateY(0); }
-}
-
-/* Parallax nebula movement */
-@keyframes nebulaParallax {
-  0%   { transform: translate(0%, 0%) scale(1); }
-  50%  { transform: translate(-2%, -3%) scale(1.05); }
-  100% { transform: translate(0%, 0%) scale(1); }
-}
-
-/* Comet animation */
-@keyframes cometTrail {
-  0% {
-    transform: translateX(-200%) translateY(-50%) rotate(45deg);
-    opacity: 0;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
   }
-  30% {
-    opacity: 1;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    text-shadow: 0 0 8px rgba(255, 0, 128, 0.7), 0 0 16px rgba(0, 128, 255, 0.7),
+      0 0 24px rgba(0, 255, 255, 0.6);
+  }
+  50% {
+    text-shadow: 0 0 16px rgba(255, 0, 128, 1), 0 0 32px rgba(0, 128, 255, 1),
+      0 0 48px rgba(0, 255, 255, 1);
+  }
+}
+
+@keyframes rainbowFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
   }
   100% {
-    transform: translateX(150%) translateY(100%) rotate(45deg);
-    opacity: 0;
+    background-position: 0% 50%;
+  }
+}
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
   }
 }
 
-@layer utilities {
-  .bg-stars {
-    @apply relative bg-black overflow-hidden;
-  }
+.neon-border-card {
+  position: relative;
+  border-radius: 1rem;
+  z-index: 1;
+  overflow: hidden;
+}
 
-  .star {
-    @apply absolute bg-white rounded-full;
-    animation: twinkle 2s infinite ease-in-out, starDrift 5s infinite ease-in-out;
-    pointer-events: none;
-    z-index: 0;
-  }
+.neon-border-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    #ff0000,
+    #ff9900,
+    #33ff00,
+    #00ffff,
+    #0066ff,
+    #cc00ff,
+    #ff0066,
+    #ff0000
+  );
+  background-size: 600% 600%;
+  animation: rainbowFlow 10s ease-in-out infinite;
 
-  .nebula {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 300vw;
-    height: 300vh;
-    background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.03), transparent 60%),
-                radial-gradient(circle at 70% 60%, rgba(128, 0, 128, 0.04), transparent 60%),
-                radial-gradient(circle at 50% 20%, rgba(0, 255, 255, 0.04), transparent 60%),
-                radial-gradient(circle at 60% 80%, rgba(255, 0, 255, 0.03), transparent 70%);
-    mix-blend-mode: screen;
-    animation: nebulaParallax 120s ease-in-out infinite;
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  .comet {
-    position: absolute;
-    top: 20%;
-    left: -50%;
-    width: 150px;
-    height: 2px;
-    background: linear-gradient(90deg, rgba(255,255,255,1), transparent);
-    transform: rotate(45deg);
-    animation: cometTrail 15s linear infinite;
-    z-index: 0;
-    pointer-events: none;
-  }
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: -1;
 }
