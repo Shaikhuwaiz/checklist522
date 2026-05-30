@@ -130,7 +130,6 @@ const fields: FieldConfig[] = [
     id: "colorpdf",
     type: "select",
   },
-  { label: "OE CSR", id: "oecsr", type: "select", options: ["OWAIZ"] },
 ];
 
 const ChecklistForm = () => {
@@ -163,49 +162,153 @@ const ChecklistForm = () => {
 
   const generatePDF = () => {
     const doc = new jsPDF();
-    let y = 20;
-
-    doc.setFontSize(16);
     const pageWidth = doc.internal.pageSize.getWidth();
-    const titleWidth = doc.getTextWidth(CHECKLIST_TITLE);
-    const centerX = (pageWidth - titleWidth) / 2;
 
-    doc.text(CHECKLIST_TITLE, centerX, y);
-    y += 10;
+    // Helper function to draw checklist fields
+    const drawField = (label: string, value: string, currentY: number) => {
+      // 1. Draw square bullet and label
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
 
-    const lines = [
-      `SO #: ${form.SO}`,
-      "ORDER ENTRY",
-      `- Correct Order #: ${form.CorrectOrder}`,
-      `- Correct PO: ${form.correctPO}`,
-      `- Correct Ship to address: ${form.correctshiptoaddress}`,
-      `- Correct Ship Date: ${form.shipDate}`,
-      `- Correct Ship Method & Terms: ${form.shipMethod}`,
-      `- Shipping Via: ${form.shipVia}`,
-      `- Special Instructions: ${form.specialins}`,
-      `- Check available stock: ${form.checkStock}`,
-      `- Backorders are placed on separate SO: ${form.backorder}`,
-      `- Price Matches ACE order copy: ${form.pricematch}`,
-      `- Correct tape/component: ${tapes
-        .map((tape) => `${tape.prefix}${tape.code}`)
-        .filter(Boolean)
-        .join(" / ")}`,
-      `- Logo Size / Tolerance for Item: ${form.logosize}`,
-      `- Bucket order with band: ${form.bucketorder}`,
-      `- Component Art: ${form.ComponentArt}`,
-      `- Labels / Hang Tags: ${form.hangtags}`,
-      `- Color PDF/Component art uploaded to NetSuite: ${form.colorpdf}`,
-      `* OE CSR ${form.oecsr}`,
-    ];
+      const bulletX = 30;
+      const labelX = 35;
 
+      // Draw a small solid square bullet (1.0mm x 1.0mm)
+      doc.setFillColor(0, 0, 0);
+      doc.rect(bulletX, currentY - 2.2, 1.0, 1.0, "F");
+
+      // Draw label text
+      doc.text(label, labelX, currentY);
+
+      // 2. Draw underline and print value
+      const valStartX = 125;
+      const textVal = value.trim() ? value : "NA";
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+
+      const textWidth = doc.getTextWidth(textVal);
+      const underlineLength = textWidth + 6;
+
+
+      // Draw thin underline 1mm below baseline
+      doc.setLineWidth(0.2);
+      doc.setDrawColor(0, 0, 0);
+      doc.line(valStartX, currentY + 1, valStartX + underlineLength, currentY + 1);
+
+      // Print value on top of the underline
+      const maxWidth = pageWidth - valStartX - 15;
+const wrappedText = doc.splitTextToSize(textVal, maxWidth);
+
+if (wrappedText.length === 1) {
+  doc.line(
+    valStartX,
+    currentY + 1,
+    valStartX + underlineLength,
+    currentY + 1
+  );
+}
+
+doc.text(wrappedText, valStartX + 2, currentY);
+
+doc.text(wrappedText, valStartX + 2, currentY);
+    };
+
+    // 1. Title
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(15);
+    const titleY = 25;
+    doc.text(CHECKLIST_TITLE, pageWidth / 2, titleY, { align: "center" });
+
+    // 2. SO # directly underneath
+    const soY = 37;
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
+    const soLabel = "SO #";
+    const soValue = form.SO.trim() ? form.SO : "NA";
 
-    lines.forEach((line) => {
-      doc.text(line, 10, y);
-      y += 10;
-    });
+    const soLabelWidth = doc.getTextWidth(soLabel + " ");
+    const valWidth = doc.getTextWidth(soValue);
+    const soUnderlineLength = Math.max(25, valWidth + 4);
+    const totalSoWidth = soLabelWidth + soUnderlineLength;
+    const soStartX = (pageWidth - totalSoWidth) / 2;
 
-    doc.save(`Checklist CC# ${form.SO}.pdf`);
+    doc.text(soLabel, soStartX, soY);
+
+    const lineStartX = soStartX + soLabelWidth;
+    doc.setLineWidth(0.2);
+    doc.setDrawColor(0, 0, 0);
+    doc.line(lineStartX, soY + 1, lineStartX + soUnderlineLength, soY + 1);
+
+    doc.setFont("helvetica", "normal");
+    doc.text(soValue, lineStartX + 2, soY);
+
+    // 3. ORDER ENTRY heading
+    const oeHeadingY = 50;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("ORDER ENTRY", 22, oeHeadingY);
+    const headingWidth = doc.getTextWidth("ORDER ENTRY");
+    doc.setLineWidth(0.3);
+    doc.line(22, oeHeadingY + 1.2, 22 + headingWidth, oeHeadingY + 1.2);
+
+    // 4. Checklist Items
+    drawField("Correct Order #", form.CorrectOrder, 60);
+
+    // Correct Ship Date with sub-label
+    drawField("Correct Ship Date", form.shipDate, 68);
+    doc.setFont("helvetica", "oblique");
+    doc.setFontSize(8.5);
+    doc.setTextColor(0, 0, 0);
+    doc.text("(Updated to today's current ship date)", 35, 72.2);
+
+    // Shipping Methods & Terms (combine shipMethod and shipVia if both present)
+    const shipMethodVal = form.shipMethod && form.shipVia 
+      ? `${form.shipMethod} / ${form.shipVia}` 
+      : (form.shipMethod || form.shipVia || "");
+    drawField("Correct Ship Method & Terms", shipMethodVal, 78);
+
+    drawField("Correct PO#", form.correctPO, 86);
+    drawField("Correct Ship to address", form.correctshiptoaddress, 94);
+    drawField("Special Instructions", form.specialins, 102);
+    drawField("Check available stock", form.checkStock, 110);
+    drawField("Backorders are placed on separate SO", form.backorder, 118);
+    drawField("Price Matches ACE order copy", form.pricematch, 126);
+
+    const tapeVal = tapes
+      .map((t) => `${t.prefix}${t.code}`)
+      .filter(Boolean)
+      .join(" / ");
+    drawField("Correct tape/component#", tapeVal, 134);
+
+    drawField("Logo Size / Tolerance for Item", form.logosize, 142);
+    drawField("Bucket order with band", form.bucketorder, 150);
+    drawField("Component Art", form.ComponentArt, 158);
+    drawField("Labels / Hang Tags", form.hangtags, 166);
+    drawField("Color PDF/Component art uploaded to NetSuite", form.colorpdf, 174);
+
+    // 5. OE CSR Signature Section at bottom
+    const oeCsrY = 210;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text("OE CSR", 22, oeCsrY);
+
+    const oeCsrLabelWidth = doc.getTextWidth("OE CSR ");
+    const csrLineStartX = 22 + oeCsrLabelWidth;
+    const csrValue = form.oecsr.trim() ? form.oecsr : "NA";
+    const csrValueWidth = doc.getTextWidth(csrValue);
+const csrUnderlineLength = csrValueWidth + 8;
+
+    doc.setLineWidth(0.2);
+    doc.setDrawColor(0, 0, 0);
+    doc.line(csrLineStartX, oeCsrY + 1, csrLineStartX + csrUnderlineLength, oeCsrY + 1);
+
+    doc.setFont("helvetica", "normal");
+    doc.text(csrValue, csrLineStartX + 2, oeCsrY);
+
+    // 6. Save and Reset
+    doc.save(`Checklist CC# ${form.SO || "NA"}.pdf`);
     setForm({ ...initialFormState });
     setTapes([{ prefix: "", code: "" }]);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -273,7 +376,7 @@ const ChecklistForm = () => {
       <div className="neon-border-card relative z-10 w-full max-w-xl rounded-2xl bg-black/80 p-8 text-white shadow-[0_0_40px_rgba(0,0,0,0.15)]">
         <h2 className="mb-4 text-center text-xl font-bold">{CHECKLIST_TITLE}</h2>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 items-start">
           {fields.map((field) => {
             const fieldElement = renderField(field);
 
@@ -299,9 +402,8 @@ const ChecklistForm = () => {
                             <option value="E">E</option>
                             <option value="3D">3D</option>
                             <option value="DTT">RTP</option>
-                            <option value="EP">V</option>
-                            <option value="EP">TF</option>
-                            
+                            <option value="V">V</option>
+                            <option value="TF">TF</option>
                           </select>
                           <input
                             type="text"
@@ -328,10 +430,34 @@ const ChecklistForm = () => {
                     <button
                       type="button"
                       onClick={addTape}
-                      className="mt-2 text-blue-600"
+                      className="mt-2 text-blue-400 hover:text-blue-300 transition-colors"
                     >
                       ➕ Add Tape
                     </button>
+                  </div>
+                </Fragment>
+              );
+            }
+
+            {/* colorpdf + OE CSR share the last row */}
+            if (field.id === "colorpdf") {
+              return (
+                <Fragment key={field.id}>
+                  {fieldElement}
+                  <div className="flex flex-col text-white">
+                    <label htmlFor="oecsr" className="mb-1 text-sm font-medium">
+                      OE CSR
+                    </label>
+                    <select
+                      id="oecsr"
+                      value={form.oecsr}
+                      onChange={handleChange}
+                      className="rounded border border-gray-400 bg-white p-2 text-black"
+                    >
+                      <option value="">-- Select --</option>
+                      <option value="OWAIZ">OWAIZ</option>
+                      <option value="SHABANZ">SHABANZ</option>
+                    </select>
                   </div>
                 </Fragment>
               );
@@ -341,12 +467,19 @@ const ChecklistForm = () => {
           })}
         </div>
 
-        <div className="mt-8 flex justify-center">
-          <button
-            onClick={generatePDF}
-            className="rounded bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
-          >
-            📄 Download Checklist CC# {form.SO || ""}
+        {/* Premium Download Button */}
+        <div className="download-wrap">
+          <button id="download-btn" className="download-btn" onClick={generatePDF}>
+            <span className="download-btn__icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </span>
+            <span className="download-btn__text">
+              Download Checklist PDF
+            </span>
           </button>
         </div>
       </div>
