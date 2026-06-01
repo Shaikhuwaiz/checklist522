@@ -376,49 +376,24 @@ select.field-control option {
 }
 
 /* Shimmer sweep on hover */
-.download-btn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.14) 50%,
-    transparent 70%
-  );
-  transform: translateX(-100%);
-  transition: transform 500ms ease;
-  pointer-events: none;
+.download-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
 }
 
-.download-btn:hover::before {
-  transform: translateX(100%);
+.download-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 .download-btn:hover {
-  transform: translateY(-3px);
-  box-shadow:
-    0 8px 36px rgba(14, 165, 234, 0.6),
-    0 2px 8px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22);
-  background-position: right center;
-}
-
-.download-btn:active {
-  transform: translateY(-1px);
-  box-shadow:
-    0 4px 18px rgba(14, 165, 234, 0.45),
-    0 1px 3px rgba(0, 0, 0, 0.35);
-}
-
-.download-btn__icon {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.download-btn__text {
-  white-space: nowrap;
+  background-color: #0056b3;
 }
 
 @media (max-width: 480px) {

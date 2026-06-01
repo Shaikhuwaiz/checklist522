@@ -181,38 +181,35 @@ const ChecklistForm = () => {
       // Draw label text
       doc.text(label, labelX, currentY);
 
-      // 2. Draw underline and print value
+      // 2. Draw value text and underline
       const valStartX = 125;
       const textVal = value.trim() ? value : "NA";
+      const maxWidth = pageWidth - valStartX - 15;
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
 
-      const textWidth = doc.getTextWidth(textVal);
-      const underlineLength = textWidth + 6;
-
-
-      // Draw thin underline 1mm below baseline
+      // Split text if it exceeds max width
+      const wrappedLines = doc.splitTextToSize(textVal, maxWidth);
+      
+      // Draw the text first
+      doc.text(wrappedLines, valStartX, currentY);
+      
+      // Calculate the longest line width for the underline
+      let longestLineWidth = 0;
+      wrappedLines.forEach((line: string) => {
+        const lineWidth = doc.getTextWidth(line);
+        if (lineWidth > longestLineWidth) {
+          longestLineWidth = lineWidth;
+        }
+      });
+      
+      const underlineLength = longestLineWidth + 4;
+      
+      // Draw thin underline that matches the longest text line
       doc.setLineWidth(0.2);
       doc.setDrawColor(0, 0, 0);
       doc.line(valStartX, currentY + 1, valStartX + underlineLength, currentY + 1);
-
-      // Print value on top of the underline
-      const maxWidth = pageWidth - valStartX - 15;
-const wrappedText = doc.splitTextToSize(textVal, maxWidth);
-
-if (wrappedText.length === 1) {
-  doc.line(
-    valStartX,
-    currentY + 1,
-    valStartX + underlineLength,
-    currentY + 1
-  );
-}
-
-doc.text(wrappedText, valStartX + 2, currentY);
-
-doc.text(wrappedText, valStartX + 2, currentY);
     };
 
     // 1. Title
@@ -221,8 +218,8 @@ doc.text(wrappedText, valStartX + 2, currentY);
     const titleY = 25;
     doc.text(CHECKLIST_TITLE, pageWidth / 2, titleY, { align: "center" });
 
-    // 2. SO # directly underneath
-    const soY = 37;
+    // 2. SO # on left side above ORDER ENTRY
+    const soY = 44;
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
     const soLabel = "SO #";
@@ -231,8 +228,7 @@ doc.text(wrappedText, valStartX + 2, currentY);
     const soLabelWidth = doc.getTextWidth(soLabel + " ");
     const valWidth = doc.getTextWidth(soValue);
     const soUnderlineLength = Math.max(25, valWidth + 4);
-    const totalSoWidth = soLabelWidth + soUnderlineLength;
-    const soStartX = (pageWidth - totalSoWidth) / 2;
+    const soStartX = 22;
 
     doc.text(soLabel, soStartX, soY);
 
@@ -245,7 +241,7 @@ doc.text(wrappedText, valStartX + 2, currentY);
     doc.text(soValue, lineStartX + 2, soY);
 
     // 3. ORDER ENTRY heading
-    const oeHeadingY = 50;
+    const oeHeadingY = 55;
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
     doc.text("ORDER ENTRY", 22, oeHeadingY);
@@ -254,42 +250,42 @@ doc.text(wrappedText, valStartX + 2, currentY);
     doc.line(22, oeHeadingY + 1.2, 22 + headingWidth, oeHeadingY + 1.2);
 
     // 4. Checklist Items
-    drawField("Correct Order #", form.CorrectOrder, 60);
+    drawField("Correct Order #", form.CorrectOrder, 65);
 
     // Correct Ship Date with sub-label
-    drawField("Correct Ship Date", form.shipDate, 68);
+    drawField("Correct Ship Date", form.shipDate, 73);
     doc.setFont("helvetica", "oblique");
     doc.setFontSize(8.5);
     doc.setTextColor(0, 0, 0);
-    doc.text("(Updated to today's current ship date)", 35, 72.2);
+    doc.text("(Updated to today's current ship date)", 35, 77.2);
 
     // Shipping Methods & Terms (combine shipMethod and shipVia if both present)
     const shipMethodVal = form.shipMethod && form.shipVia 
       ? `${form.shipMethod} / ${form.shipVia}` 
       : (form.shipMethod || form.shipVia || "");
-    drawField("Correct Ship Method & Terms", shipMethodVal, 78);
+    drawField("Correct Ship Method & Terms", shipMethodVal, 83);
 
-    drawField("Correct PO#", form.correctPO, 86);
-    drawField("Correct Ship to address", form.correctshiptoaddress, 94);
-    drawField("Special Instructions", form.specialins, 102);
-    drawField("Check available stock", form.checkStock, 110);
-    drawField("Backorders are placed on separate SO", form.backorder, 118);
-    drawField("Price Matches ACE order copy", form.pricematch, 126);
+    drawField("Correct PO#", form.correctPO, 91);
+    drawField("Correct Ship to address", form.correctshiptoaddress, 99);
+    drawField("Special Instructions", form.specialins, 107);
+    drawField("Check available stock", form.checkStock, 115);
+    drawField("Backorders are placed on separate SO", form.backorder, 123);
+    drawField("Price Matches ACE order copy", form.pricematch, 131);
 
     const tapeVal = tapes
       .map((t) => `${t.prefix}${t.code}`)
       .filter(Boolean)
       .join(" / ");
-    drawField("Correct tape/component#", tapeVal, 134);
+    drawField("Correct tape/component#", tapeVal, 139);
 
-    drawField("Logo Size / Tolerance for Item", form.logosize, 142);
-    drawField("Bucket order with band", form.bucketorder, 150);
-    drawField("Component Art", form.ComponentArt, 158);
-    drawField("Labels / Hang Tags", form.hangtags, 166);
-    drawField("Color PDF/Component art uploaded to NetSuite", form.colorpdf, 174);
+    drawField("Logo Size / Tolerance for Item", form.logosize, 147);
+    drawField("Bucket order with band", form.bucketorder, 155);
+    drawField("Component Art", form.ComponentArt, 163);
+    drawField("Labels / Hang Tags", form.hangtags, 171);
+    drawField("Color PDF/Component art uploaded to NetSuite", form.colorpdf, 179);
 
     // 5. OE CSR Signature Section at bottom
-    const oeCsrY = 210;
+    const oeCsrY = 190;
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.text("OE CSR", 22, oeCsrY);
@@ -297,15 +293,21 @@ doc.text(wrappedText, valStartX + 2, currentY);
     const oeCsrLabelWidth = doc.getTextWidth("OE CSR ");
     const csrLineStartX = 22 + oeCsrLabelWidth;
     const csrValue = form.oecsr.trim() ? form.oecsr : "NA";
-    const csrValueWidth = doc.getTextWidth(csrValue);
-const csrUnderlineLength = csrValueWidth + 8;
 
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    
+    // Draw the CSR value text first
+    doc.text(csrValue, csrLineStartX, oeCsrY);
+    
+    // Measure the actual text width
+    const csrValueWidth = doc.getTextWidth(csrValue);
+    const csrUnderlineLength = csrValueWidth + 4;
+
+    // Draw thin underline that matches text length
     doc.setLineWidth(0.2);
     doc.setDrawColor(0, 0, 0);
     doc.line(csrLineStartX, oeCsrY + 1, csrLineStartX + csrUnderlineLength, oeCsrY + 1);
-
-    doc.setFont("helvetica", "normal");
-    doc.text(csrValue, csrLineStartX + 2, oeCsrY);
 
     // 6. Save and Reset
     doc.save(`Checklist CC# ${form.SO || "NA"}.pdf`);
@@ -456,7 +458,7 @@ const csrUnderlineLength = csrValueWidth + 8;
                     >
                       <option value="">-- Select --</option>
                       <option value="OWAIZ">OWAIZ</option>
-                      <option value="SHABANZ">SHABANZ</option>
+                      
                     </select>
                   </div>
                 </Fragment>
