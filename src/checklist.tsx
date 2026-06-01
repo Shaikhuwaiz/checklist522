@@ -457,7 +457,8 @@ const ChecklistForm = () => {
                       className="rounded border border-gray-400 bg-white p-2 text-black"
                     >
                       <option value="">-- Select --</option>
-                      <option value="OWAIZ">OWAIZ</option>
+                      <option value="Owaiz">Owaiz</option>
+                      <option value="Shabnaz">Shabnaz</option>
                       
                     </select>
                   </div>
