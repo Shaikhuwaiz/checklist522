@@ -204,7 +204,7 @@ const ChecklistForm = () => {
         }
       });
       
-      const underlineLength = longestLineWidth + 4;
+      const underlineLength = longestLineWidth + 1;
       
       // Draw thin underline that matches the longest text line
       doc.setLineWidth(0.2);
@@ -250,14 +250,14 @@ const ChecklistForm = () => {
     doc.line(22, oeHeadingY + 1.2, 22 + headingWidth, oeHeadingY + 1.2);
 
     // 4. Checklist Items
-    drawField("Correct Order #", form.CorrectOrder, 65);
+    drawField("Correct Order #", form.CorrectOrder, 65, );
 
     // Correct Ship Date with sub-label
     drawField("Correct Ship Date", form.shipDate, 73);
     doc.setFont("helvetica", "oblique");
     doc.setFontSize(8.5);
     doc.setTextColor(0, 0, 0);
-    doc.text("(Updated to today's current ship date)", 35, 77.2);
+    doc.text("(Updated to today's current ship date)", 35, 77.2,);
 
     // Shipping Methods & Terms (combine shipMethod and shipVia if both present)
     const shipMethodVal = form.shipMethod && form.shipVia 
@@ -288,21 +288,21 @@ const ChecklistForm = () => {
     const oeCsrY = 190;
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
-    doc.text("OE CSR", 22, oeCsrY);
+    doc.text("OE CSR :", 20, oeCsrY );
 
-    const oeCsrLabelWidth = doc.getTextWidth("OE CSR ");
+    const oeCsrLabelWidth = doc.getTextWidth("OE CSR :");
     const csrLineStartX = 22 + oeCsrLabelWidth;
     const csrValue = form.oecsr.trim() ? form.oecsr : "NA";
 
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
+    doc.setFontSize(13);
     
     // Draw the CSR value text first
     doc.text(csrValue, csrLineStartX, oeCsrY);
     
     // Measure the actual text width
     const csrValueWidth = doc.getTextWidth(csrValue);
-    const csrUnderlineLength = csrValueWidth + 4;
+    const csrUnderlineLength = csrValueWidth + 2;
 
     // Draw thin underline that matches text length
     doc.setLineWidth(0.2);
@@ -403,7 +403,9 @@ const ChecklistForm = () => {
                             <option value="">Prefix</option>
                             <option value="E">E</option>
                             <option value="3D">3D</option>
-                            <option value="DTT">RTP</option>
+                              <option value="F">F</option>
+                            <option value="RTP">RTP</option>
+                              <option value="DTT">DTT</option>
                             <option value="V">V</option>
                             <option value="TF">TF</option>
                           </select>
