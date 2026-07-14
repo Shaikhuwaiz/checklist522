@@ -141,14 +141,16 @@ useEffect(() => {
 
     const data = JSON.parse(raw);
 
-   setForm(prev => ({
+  setForm(prev => ({
     ...prev,
-    SO: data.cc || "",          
-    CorrectOrder: data.oe || "", 
+    SO: data.cc || "",
+    CorrectOrder: data.oe || "",
     shipDate: data.shipDate || "",
     shipMethod: data.shipMethod || "",
-    shipVia: data.shipVia || ""
-}));
+    shipVia: data.shipVia || "",
+    correctPO: data.correctPO || "",
+    correctshiptoaddress: data.shipToAddress || ""
+}));;
 
     if (data.tape) {
         const tapeList = data.tape.split(",").map((t: string) => ({
