@@ -7,11 +7,7 @@ import Galaxy from "./components/Galaxy";
 
 const CHECKLIST_TITLE = "Outsourcing OE Checklist - DOMESTIC";
 
-const loadFromTampermonkey = async () => {
-  useEffect(() => {
-  loadFromTampermonkey();
-}, []);
-};
+
 const initialFormState = {
   SO: "",
   CorrectOrder: "",
@@ -140,7 +136,30 @@ const fields: FieldConfig[] = [
 const ChecklistForm = () => {
   const [form, setForm] = useState<FormState>(initialFormState);
   const [tapes, setTapes] = useState<Tape[]>([{ prefix: "", code: "" }]);
+useEffect(() => {
+    const raw = localStorage.getItem("checklistData");
+    if (!raw) return;
 
+    const data = JSON.parse(raw);
+
+    setForm(prev => ({
+        ...prev,
+        SO: data.so || "",
+        CorrectOrder: data.correctOrder || "",
+        shipDate: data.shipDate || "",
+        shipMethod: data.shipMethod || "",
+        shipVia: data.shipVia || ""
+    }));
+
+    if (data.tape) {
+        const tapeList = data.tape.split(",").map((t: string) => ({
+            prefix: t.match(/^[A-Za-z]+/)?.[0] || "",
+            code: t.replace(/^[A-Za-z]+/, "").trim()
+        }));
+
+        setTapes(tapeList);
+    }
+}, []);
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
     setForm((prev) => ({ ...prev, [id]: value }));
