@@ -391,7 +391,6 @@ export default function Galaxy({
     speed,
     glowIntensity,
     saturation,
-    mouseRepulsion,
     twinkleIntensity,
     rotationSpeed,
     repulsionStrength,
