@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { format, parse } from "date-fns";
+import { format, isValid, parse } from "date-fns";
 import { Fragment, useState, useEffect, type ChangeEvent } from "react";
 import Galaxy from "./components/Galaxy";
 
@@ -365,7 +365,14 @@ useEffect(() => {
           </select>
         ) : field.type === "date" ? (
           <DatePicker
-            selected={value ? parse(value, "MM-dd-yyyy", new Date()) : null}
+            selected={
+  value
+    ? (() => {
+        const d = parse(value, "MM-dd-yyyy", new Date());
+        return isValid(d) ? d : null;
+      })()
+    : null
+}
             onChange={(date) =>
               setForm((prev) => ({
                 ...prev,
