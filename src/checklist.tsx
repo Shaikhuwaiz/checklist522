@@ -2,13 +2,15 @@ import jsPDF from "jspdf";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, parse } from "date-fns";
-import { Fragment, useState, type ChangeEvent } from "react";
+import { Fragment, useState, useEffect, type ChangeEvent } from "react";
 import Galaxy from "./components/Galaxy";
 
 const CHECKLIST_TITLE = "Outsourcing OE Checklist - DOMESTIC";
 
 const loadFromTampermonkey = async () => {
-  // This will be replaced by a bridge
+  useEffect(() => {
+  loadFromTampermonkey();
+}, []);
 };
 const initialFormState = {
   SO: "",
