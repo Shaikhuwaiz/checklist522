@@ -2,7 +2,7 @@ import jsPDF from "jspdf";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, parse } from "date-fns";
-import { Fragment, useState, type ChangeEvent } from "react";
+import { Fragment, useState, useEffect, type ChangeEvent } from "react";
 import Galaxy from "./components/Galaxy";
 
 const CHECKLIST_TITLE = "Outsourcing OE Checklist - DOMESTIC";
@@ -15,15 +15,15 @@ const initialFormState = {
   shipDate: "",
   shipMethod: "FedEx Ground",
   shipVia: "Standard",
-  specialins: "",
+  specialins: "YES",
   checkStock: "NA",
   backorder: "NA",
-  pricematch: "",
+  pricematch: "YES",
   logosize: "NA",
   bucketorder: "NA",
-  ComponentArt: "",
+  ComponentArt: "YES",
   hangtags: "NA",
-  colorpdf: "",
+  colorpdf: "YES",
   oecsr: "OWAIZ",
 };
 
@@ -135,7 +135,30 @@ const fields: FieldConfig[] = [
 const ChecklistForm = () => {
   const [form, setForm] = useState<FormState>(initialFormState);
   const [tapes, setTapes] = useState<Tape[]>([{ prefix: "", code: "" }]);
+useEffect(() => {
+    const raw = localStorage.getItem("checklistData");
+    if (!raw) return;
 
+    const data = JSON.parse(raw);
+
+    setForm(prev => ({
+        ...prev,
+        SO: data.so || "",
+        CorrectOrder: data.correctOrder || "",
+        shipDate: data.shipDate || "",
+        shipMethod: data.shipMethod || "",
+        shipVia: data.shipVia || ""
+    }));
+
+    if (data.tape) {
+        const tapeList = data.tape.split(",").map((t: string) => ({
+            prefix: t.match(/^[A-Za-z]+/)?.[0] || "",
+            code: t.replace(/^[A-Za-z]+/, "").trim()
+        }));
+
+        setTapes(tapeList);
+    }
+}, []);
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
     setForm((prev) => ({ ...prev, [id]: value }));
