@@ -371,7 +371,6 @@ const ChecklistForm = () => {
   return (
     <div className="galaxy-shell">
       <Galaxy
-        mouseInteraction
         density={1.1}
         glowIntensity={0.36}
         saturation={0.15}
