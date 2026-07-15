@@ -405,19 +405,19 @@ const ChecklistForm = () => {
               return (
                 <Fragment key={field.id}>
                   {fieldElement}
-                  <div className="mt-4 md:col-span-2">
-                    <label className="font-semibold text-white">
+                  <div className="mt-4 md:col-span-2 flex flex-col items-center">
+                    <label className="mb-2 text-center font-semibold text-white">
                       Correct tape/component:
                     </label>
                     <div className="space-y-2">
                       {tapes.map((tape, index) => (
-                        <div key={index} className="mt-2 flex gap-2">
+                        <div key={index} className="mt-2 flex justify-center">
                           <input
                             type="text"
                             value={tape}
                             placeholder="Tape"
                             onChange={(e) => handleTapeChange(index, e.target.value)}
-                            className="w-full rounded border bg-white p-2 text-black"
+                            className="w-full max-w-md rounded border bg-white p-2 text-black"
                           />
                           {tapes.length > 1 && (
                             <button
