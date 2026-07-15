@@ -29,11 +29,6 @@ const initialFormState = {
 
 type FormState = typeof initialFormState;
 
-type Tape = {
-  prefix: string;
-  code: string;
-};
-
 type FieldConfig = {
   label: string;
   id: keyof FormState;
@@ -134,52 +129,47 @@ const fields: FieldConfig[] = [
 
 const ChecklistForm = () => {
   const [form, setForm] = useState<FormState>(initialFormState);
-  const [tapes, setTapes] = useState<Tape[]>([{ prefix: "", code: "" }]);
-useEffect(() => {
+  const [tapes, setTapes] = useState<string[]>([""]);
+
+  useEffect(() => {
     const raw = localStorage.getItem("checklistData");
     if (!raw) return;
 
     const data = JSON.parse(raw);
 
- setForm(prev => ({
-    ...prev,
-    SO: data.cc || "",
-    CorrectOrder: data.oe || "",
-    shipDate: data.shipDate || "",
-    shipMethod: data.shipMethod || "",
-    shipterms: data.shipterms || "",
-    correctPO: data.correctPO || "",
-    correctshiptoaddress: data.shipToAddress || ""
-}));
+    setForm((prev) => ({
+      ...prev,
+      SO: data.cc || "",
+      CorrectOrder: data.oe || "",
+      shipDate: data.shipDate || "",
+      shipMethod: data.shipMethod || "",
+      shipterms: data.shipterms || "",
+      correctPO: data.correctPO || "",
+      correctshiptoaddress: data.shipToAddress || "",
+    }));
 
     if (data.tape) {
-        const tapeList = data.tape.split(",").map((t: string) => ({
-            prefix: t.match(/^[A-Za-z]+/)?.[0] || "",
-            code: t.replace(/^[A-Za-z]+/, "").trim()
-        }));
+      const tapeList = data.tape
+        .split(",")
+        .map((t: string) => t.trim())
+        .filter(Boolean);
 
-        setTapes(tapeList);
+      setTapes(tapeList);
     }
-}, []);
+  }, []);
+
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
     setForm((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handleTapeChange = (
-    index: number,
-    field: keyof Tape,
-    value: string
-  ) => {
+  const handleTapeChange = (index: number, value: string) => {
     const updated = [...tapes];
-    updated[index] = {
-      ...updated[index],
-      [field]: value,
-    };
+    updated[index] = value;
     setTapes(updated);
   };
 
-  const addTape = () => setTapes([...tapes, { prefix: "", code: "" }]);
+  const addTape = () => setTapes([...tapes, ""]);
 
   const removeTape = (index: number) => {
     setTapes((prev) => prev.filter((_, itemIndex) => itemIndex !== index));
@@ -297,10 +287,7 @@ useEffect(() => {
     drawField("Backorders are placed on separate SO", form.backorder, 123);
     drawField("Price Matches ACE order copy", form.pricematch, 131);
 
-    const tapeVal = tapes
-      .map((t) => `${t.prefix}${t.code}`)
-      .filter(Boolean)
-      .join(" / ");
+    const tapeVal = tapes.filter(Boolean).join(" / ");
     drawField("Correct tape/component#", tapeVal, 139);
 
     drawField("Logo Size / Tolerance for Item", form.logosize, 147);
@@ -337,7 +324,7 @@ useEffect(() => {
     // 6. Save and Reset
     doc.save(`Checklist CC# ${form.SO || "NA"}.pdf`);
     setForm({ ...initialFormState });
-    setTapes([{ prefix: "", code: "" }]);
+    setTapes([""]);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -425,30 +412,12 @@ useEffect(() => {
                     <div className="space-y-2">
                       {tapes.map((tape, index) => (
                         <div key={index} className="mt-2 flex gap-2">
-                          <select
-                            value={tape.prefix}
-                            onChange={(e) =>
-                              handleTapeChange(index, "prefix", e.target.value)
-                            }
-                            className="w-1/4 rounded border bg-white p-2 text-black"
-                          >
-                            <option value="">Prefix</option>
-                            <option value="E">E</option>
-                            <option value="3D">3D</option>
-                              <option value="F">F</option>
-                            <option value="RTP">RTP</option>
-                              <option value="DTT">DTT</option>
-                            <option value="V">V</option>
-                            <option value="TF">TF</option>
-                          </select>
                           <input
                             type="text"
-                            value={tape.code}
+                            value={tape}
                             placeholder="Tape"
-                            onChange={(e) =>
-                              handleTapeChange(index, "code", e.target.value)
-                            }
-                            className="w-2/4 rounded border bg-white p-2 text-black"
+                            onChange={(e) => handleTapeChange(index, e.target.value)}
+                            className="w-full rounded border bg-white p-2 text-black"
                           />
                           {tapes.length > 1 && (
                             <button
