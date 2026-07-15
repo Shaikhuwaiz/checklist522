@@ -99,6 +99,7 @@ const fields: FieldConfig[] = [
       "Flat UPS $1.75/unit",
       "Flat UPS $.75/unit",
       "Flat UPS $2.00/unit",
+      "Flat UPS $1.50/unit",
       "Truck Standard",
       "Custom Rate",
       "Flat UPS $1.25/unit",
