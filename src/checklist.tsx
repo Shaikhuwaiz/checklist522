@@ -14,7 +14,7 @@ const initialFormState = {
   correctshiptoaddress: "",
   shipDate: "",
   shipMethod: "FedEx Ground",
-  shipVia: "Standard",
+  shipterms: "Standard",
   specialins: "YES",
   checkStock: "NA",
   backorder: "NA",
@@ -91,8 +91,8 @@ const fields: FieldConfig[] = [
     ],
   },
   {
-    label: "Shipping Via",
-    id: "shipVia",
+    label: "Shipping Terms",
+    id: "shipterms",
     type: "select",
     options: [
       "Standard",
@@ -147,7 +147,7 @@ useEffect(() => {
     CorrectOrder: data.oe || "",
     shipDate: data.shipDate || "",
     shipMethod: data.shipMethod || "",
-    shipVia: data.shipVia || "",
+    shipterms: data.shipterms || "",
     correctPO: data.correctPO || "",
     correctshiptoaddress: data.shipToAddress || ""
 }));
@@ -284,10 +284,10 @@ useEffect(() => {
     doc.setTextColor(0, 0, 0);
     doc.text("(Updated to today's current ship date)", 35, 77.2,);
 
-    // Shipping Methods & Terms (combine shipMethod and shipVia if both present)
-    const shipMethodVal = form.shipMethod && form.shipVia 
-      ? `${form.shipMethod} / ${form.shipVia}` 
-      : (form.shipMethod || form.shipVia || "");
+    // Shipping Methods & Terms (combine shipMethod and shipterms if both present)
+    const shipMethodVal = form.shipMethod && form.shipterms 
+      ? `${form.shipMethod} / ${form.shipterms}` 
+      : (form.shipMethod || form.shipterms || "");
     drawField("Correct Ship Method & Terms", shipMethodVal, 83);
 
     drawField("Correct PO#", form.correctPO, 91);
