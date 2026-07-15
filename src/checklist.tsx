@@ -368,7 +368,7 @@ useEffect(() => {
             selected={
   value
     ? (() => {
-        const d = parse(value, "MM-dd-yyyy", new Date());
+        const d = parse(value, "MM/dd/yyyy", new Date());
         return isValid(d) ? d : null;
       })()
     : null
@@ -376,10 +376,10 @@ useEffect(() => {
             onChange={(date) =>
               setForm((prev) => ({
                 ...prev,
-                [field.id]: date ? format(date, "MM-dd-yyyy") : "",
+                [field.id]: date ? format(date, "MM/dd/yyyy") : "",
               }))
             }
-            dateFormat="MM-dd-yyyy"
+            dateFormat="MM/dd/yyyy"
             placeholderText="Select Date"
             className="rounded border border-gray-400 p-2 text-black"
           />
