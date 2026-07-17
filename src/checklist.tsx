@@ -41,7 +41,7 @@ const fields: FieldConfig[] = [
   { label: "Correct Order #", id: "CorrectOrder" },
   { label: "Correct Ship Date", id: "shipDate", type: "date" },
   {
-    label: "Shipping Methods & Terms",
+    label: "Shipping Method",
     id: "shipMethod",
     type: "select",
     options: [
@@ -144,7 +144,7 @@ const ChecklistForm = () => {
       CorrectOrder: data.oe || "",
       shipDate: data.shipDate || "",
       shipMethod: data.shipMethod || "",
-      shipterms: data.shipterms || "",
+      shipterms: data.shipVia || data.shipterms || "",
       correctPO: data.correctPO || "",
       correctshiptoaddress: data.shipToAddress || "",
     }));
@@ -275,14 +275,14 @@ const ChecklistForm = () => {
     doc.setTextColor(0, 0, 0);
     doc.text("(Updated to today's current ship date)", 35, 77.2,);
 
-    // Shipping Methods & Terms (combine shipMethod and shipterms if both present)
-    const shipMethodVal = form.shipMethod && form.shipterms 
-      ? `${form.shipMethod} / ${form.shipterms}` 
-      : (form.shipMethod || form.shipterms || "");
-    drawField("Correct Ship Method & Terms", shipMethodVal, 83);
+    // Shipping Method and Shipping Terms
+    const shipMethodVal = form.shipMethod || "";
+    const shipTermsVal = form.shipterms || "";
+    drawField("Correct Ship Method", shipMethodVal, 83);
+    drawField("Correct Shipping Terms", shipTermsVal, 91);
 
-    drawField("Correct PO#", form.correctPO, 91);
-    drawField("Correct Ship to address", form.correctshiptoaddress, 99);
+    drawField("Correct PO#", form.correctPO, 99);
+    drawField("Correct Ship to address", form.correctshiptoaddress, 107);
     drawField("Special Instructions", form.specialins, 107);
     drawField("Check available stock", form.checkStock, 115);
     drawField("Backorders are placed on separate SO", form.backorder, 123);
