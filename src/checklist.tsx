@@ -283,22 +283,22 @@ const ChecklistForm = () => {
 
     drawField("Correct PO#", form.correctPO, 99);
     drawField("Correct Ship to address", form.correctshiptoaddress, 107);
-    drawField("Special Instructions", form.specialins, 107);
-    drawField("Check available stock", form.checkStock, 115);
-    drawField("Backorders are placed on separate SO", form.backorder, 123);
-    drawField("Price Matches ACE order copy", form.pricematch, 131);
+    drawField("Special Instructions", form.specialins, 115);
+    drawField("Check available stock", form.checkStock, 123);
+    drawField("Backorders are placed on separate SO", form.backorder, 131);
+    drawField("Price Matches ACE order copy", form.pricematch, 139);
 
     const tapeVal = tapes.filter(Boolean).join(" / ");
-    drawField("Correct tape/component#", tapeVal, 139);
+    drawField("Correct tape/component#", tapeVal, 147);
 
-    drawField("Logo Size / Tolerance for Item", form.logosize, 147);
-    drawField("Bucket order with band", form.bucketorder, 155);
-    drawField("Component Art", form.ComponentArt, 163);
-    drawField("Labels / Hang Tags", form.hangtags, 171);
-    drawField("Color PDF/Component art uploaded to NetSuite", form.colorpdf, 179);
+    drawField("Logo Size / Tolerance for Item", form.logosize, 155);
+    drawField("Bucket order with band", form.bucketorder, 163);
+    drawField("Component Art", form.ComponentArt, 171);
+    drawField("Labels / Hang Tags", form.hangtags, 179);
+    drawField("Color PDF/Component art uploaded to NetSuite", form.colorpdf, 187);
 
     // 5. OE CSR Signature Section at bottom
-    const oeCsrY = 190;
+    const oeCsrY = 200;
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.text("OE CSR :", 20, oeCsrY );
