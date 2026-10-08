@@ -679,7 +679,7 @@ export default function BinaryOrbits({
         (c.centerX ?? 0.5) * w,
         (c.centerY ?? 0.48) * h,
       ];
-      const unit = Math.min(w * 0.95, h * 1.1);
+      const unit = Math.min(w * 0.95, h * 1.3);
 
       gl.viewport(0, 0, bw, bh);
       gl.clearColor(0, 0, 0, 0);
@@ -816,7 +816,7 @@ export default function BinaryOrbits({
     const rect = root.getBoundingClientRect();
     if (rect.width <= 0 || rect.height <= 0) return null;
     const c = cfgRef.current;
-    const unit = Math.min(rect.width * 0.95, rect.height * 1.1) * (c.scale ?? 0.72);
+    const unit = Math.min(rect.width * 0.95, rect.height * 1.3) * (c.scale ?? 0.72);
     if (unit <= 0) return null;
     const dx = (clientX - rect.left - (c.centerX ?? 0.5) * rect.width) / unit;
     const dy = (clientY - rect.top - (c.centerY ?? 0.48) * rect.height) / unit;

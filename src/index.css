@@ -43,7 +43,7 @@ body {
 }
 
 .app-bg {
-  position: absolute;
+  position: fixed;
   inset: 0;
   overflow: hidden;
   z-index: 0;
@@ -54,17 +54,10 @@ body {
   z-index: 1;
   border-radius: 20px;
   padding: clamp(24px, 3.4vw, 36px);
-  background:
-    radial-gradient(
-      125% 98% at 50% 46%,
-      rgba(6, 8, 20, 0.3) 0%,
-      rgba(9, 12, 28, 0.18) 58%,
-      rgba(13, 17, 36, 0.08) 100%
-    ),
-    linear-gradient(180deg, rgba(16, 20, 42, 0.08), rgba(4, 6, 14, 0.12));
+  background: linear-gradient(180deg, rgba(10, 13, 30, 0.12), rgba(4, 6, 14, 0.2));
   border: 1px solid rgba(150, 170, 255, 0.22);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(6px) saturate(125%);
+  -webkit-backdrop-filter: blur(6px) saturate(125%);
   box-shadow:
     0 24px 70px rgba(0, 0, 0, 0.55),
     0 0 60px rgba(129, 101, 255, 0.12),
@@ -99,7 +92,9 @@ body {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #eef2ff;
-  text-shadow: 0 0 24px rgba(98, 229, 255, 0.22);
+  text-shadow:
+    0 0 24px rgba(98, 229, 255, 0.22),
+    0 1px 8px rgba(0, 0, 0, 0.7);
 }
 
 .field-shell {
@@ -116,20 +111,22 @@ body {
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.75);
 }
 
 .field-control {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: rgba(8, 11, 28, 0.34);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(8, 11, 28, 0.2);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   color: var(--text-main);
   outline: none;
   padding: 0.85rem 1rem;
   font-family: inherit;
   font-size: 0.92rem;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.7);
   transition:
     border-color 180ms ease,
     box-shadow 180ms ease,
@@ -138,12 +135,12 @@ body {
 }
 
 .field-control::placeholder {
-  color: rgba(224, 232, 255, 0.34);
+  color: rgba(224, 232, 255, 0.5);
 }
 
 .field-control:hover {
   border-color: rgba(156, 177, 255, 0.3);
-  background: rgba(10, 14, 34, 0.46);
+  background: rgba(10, 14, 34, 0.32);
 }
 
 .field-control:focus {
