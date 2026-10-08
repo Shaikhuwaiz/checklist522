@@ -3,7 +3,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, isValid, parse } from "date-fns";
 import { Fragment, useState, useEffect, type ChangeEvent } from "react";
-import Galaxy from "./components/Galaxy";
+import BinaryOrbits from "./components/BinaryOrbits";
 
 const CHECKLIST_TITLE = "Outsourcing OE Checklist - DOMESTIC";
 
@@ -384,16 +384,18 @@ const ChecklistForm = () => {
   };
 
   return (
-    <div className="galaxy-shell">
-      <Galaxy
-        mouseInteraction
-        density={1.1}
-        glowIntensity={0.36}
-        saturation={0.15}
-        speed={1.15}
-        rotationSpeed={0.06}
-        className="opacity-100"
-      />
+    <div className="app-shell">
+      <div className="app-bg">
+        <BinaryOrbits
+          colors={["#8165ff", "#62e5ff"]}
+          backgroundColor="transparent"
+          tilt={62}
+          roll={-8}
+          stars={50000}
+          glow={0.5}
+          depth={0.4}
+        />
+      </div>
 
       <div className="neon-border-card relative z-10 w-full max-w-xl rounded-2xl bg-black/80 p-8 text-white shadow-[0_0_40px_rgba(0,0,0,0.15)]">
         <h2 className="mb-4 text-center text-xl font-bold">{CHECKLIST_TITLE}</h2>

@@ -44,7 +44,7 @@ body {
   }
 }
 
-.galaxy-shell {
+.app-shell {
   position: relative;
   display: flex;
   min-height: 100vh;
@@ -53,6 +53,13 @@ body {
   overflow: hidden;
   isolation: isolate;
   padding: 48px 16px;
+}
+
+.app-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
 }
 
 .neon-border-card {
@@ -88,82 +95,6 @@ body {
   mask-composite: exclude;
   pointer-events: none;
   z-index: -1;
-}
-
-.galaxy-card {
-  position: relative;
-  z-index: 1;
-  width: min(100%, 980px);
-  overflow: hidden;
-  border: 1px solid rgba(129, 101, 255, 0.16);
-  border-radius: 28px;
-  background: linear-gradient(180deg, rgba(11, 15, 38, 0.82), rgba(6, 9, 22, 0.96));
-  box-shadow:
-    0 32px 100px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(20px);
-  padding: clamp(24px, 4vw, 36px);
-}
-
-.galaxy-card::before {
-  content: "";
-  position: absolute;
-  inset: 1px;
-  border-radius: 27px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 28%);
-  pointer-events: none;
-}
-
-.galaxy-card::after {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(
-    125deg,
-    rgba(98, 229, 255, 0.46),
-    rgba(129, 101, 255, 0.52),
-    rgba(255, 120, 220, 0.38)
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-
-.galaxy-header {
-  position: relative;
-  z-index: 1;
-  margin-bottom: 28px;
-  text-align: center;
-}
-
-.galaxy-kicker {
-  margin: 0 0 10px;
-  color: var(--text-soft);
-  font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-}
-
-.galaxy-title {
-  margin: 0;
-  font-size: clamp(1.6rem, 2.8vw, 2.35rem);
-  line-height: 1.1;
-  letter-spacing: 0.02em;
-  text-shadow: 0 0 24px rgba(129, 101, 255, 0.28);
-}
-
-.galaxy-subtitle {
-  margin: 12px auto 0;
-  max-width: 640px;
-  color: var(--text-soft);
-  font-size: 0.98rem;
-  line-height: 1.6;
 }
 
 .field-shell {
@@ -306,18 +237,9 @@ select.field-control option {
 }
 
 @media (max-width: 768px) {
-  .galaxy-shell {
+  .app-shell {
     align-items: flex-start;
     padding: 28px 12px;
-  }
-
-  .galaxy-card {
-    border-radius: 24px;
-    padding: 22px 16px;
-  }
-
-  .galaxy-card::before {
-    border-radius: 23px;
   }
 
   .tape-row {
