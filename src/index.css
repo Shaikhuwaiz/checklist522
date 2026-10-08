@@ -3,13 +3,12 @@
 @tailwind utilities;
 
 :root {
+  color-scheme: dark;
   --line: rgba(156, 177, 255, 0.2);
   --line-strong: rgba(156, 177, 255, 0.4);
   --text-main: #f4f7ff;
-  --text-soft: #aab9f2;
   --accent-cyan: #62e5ff;
   --accent-violet: #8165ff;
-  --accent-pink: #ff78dc;
 }
 
 * {
@@ -32,18 +31,6 @@ body {
   min-height: 100vh;
 }
 
-@keyframes rainbowFlow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
 .app-shell {
   position: relative;
   display: flex;
@@ -62,39 +49,50 @@ body {
   z-index: 0;
 }
 
-.neon-border-card {
+.glass-card {
   position: relative;
-  overflow: hidden;
-  border-radius: 1rem;
   z-index: 1;
+  border-radius: 20px;
+  padding: clamp(24px, 3.4vw, 36px);
+  background: linear-gradient(180deg, rgba(10, 13, 26, 0.78), rgba(6, 8, 17, 0.88));
+  border: 1px solid rgba(150, 170, 255, 0.14);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.55),
+    0 0 46px rgba(98, 229, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-.neon-border-card::before {
+.glass-card::before {
   content: "";
   position: absolute;
-  inset: 0;
-  padding: 2px;
-  border-radius: inherit;
+  inset: -1px;
+  border-radius: 21px;
+  padding: 1px;
   background: linear-gradient(
-    90deg,
-    #ff0000,
-    #ff9900,
-    #33ff00,
-    #00ffff,
-    #0066ff,
-    #cc00ff,
-    #ff0066,
-    #ff0000
+    135deg,
+    rgba(98, 229, 255, 0.5),
+    rgba(129, 101, 255, 0.4) 40%,
+    rgba(255, 255, 255, 0) 75%
   );
-  background-size: 600% 600%;
-  animation: rainbowFlow 10s ease-in-out infinite;
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
-  z-index: -1;
+}
+
+.card-title {
+  margin: 0 0 24px;
+  text-align: center;
+  font-size: clamp(1.05rem, 2vw, 1.3rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #eef2ff;
+  text-shadow: 0 0 24px rgba(98, 229, 255, 0.22);
 }
 
 .field-shell {
@@ -116,11 +114,13 @@ body {
 .field-control {
   width: 100%;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 12px;
   background: rgba(8, 11, 28, 0.76);
   color: var(--text-main);
   outline: none;
-  padding: 0.9rem 1rem;
+  padding: 0.85rem 1rem;
+  font-family: inherit;
+  font-size: 0.92rem;
   transition:
     border-color 180ms ease,
     box-shadow 180ms ease,
@@ -150,7 +150,8 @@ select.field-control {
 }
 
 select.field-control option {
-  color: #0a1028;
+  background: #0b0f1e;
+  color: var(--text-main);
 }
 
 .tape-stack {
@@ -165,65 +166,62 @@ select.field-control option {
   gap: 12px;
 }
 
-.tape-prefix {
-  flex: 0 0 120px;
-}
-
-.primary-button,
-.secondary-button {
+.btn-ghost {
   position: relative;
   z-index: 1;
-  cursor: pointer;
-  border-radius: 999px;
+  border: 1px solid rgba(98, 229, 255, 0.35);
+  border-radius: 12px;
+  padding: 0.6rem 1.2rem;
+  background: rgba(98, 229, 255, 0.08);
+  color: var(--accent-cyan);
+  font-family: inherit;
+  font-size: 0.82rem;
   font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
   transition:
     transform 180ms ease,
     box-shadow 180ms ease,
-    border-color 180ms ease,
-    background-color 180ms ease;
+    background-color 180ms ease,
+    border-color 180ms ease;
 }
 
-.primary-button {
-  border: 0;
-  padding: 0.95rem 1.8rem;
-  color: #091123;
-  background: linear-gradient(
-    90deg,
-    var(--accent-cyan),
-    var(--accent-violet) 52%,
-    var(--accent-pink)
-  );
-  box-shadow:
-    0 16px 42px rgba(129, 101, 255, 0.3),
-    0 0 22px rgba(98, 229, 255, 0.22);
-}
-
-.secondary-button {
-  border: 1px solid var(--line);
-  padding: 0.75rem 1rem;
-  color: var(--text-main);
-  background: rgba(10, 14, 34, 0.72);
-}
-
-.danger-button {
-  border-color: rgba(255, 120, 220, 0.24);
-  color: #ffd7f4;
-}
-
-.primary-button:hover,
-.secondary-button:hover {
+.btn-ghost:hover {
   transform: translateY(-1px);
+  background: rgba(98, 229, 255, 0.16);
+  border-color: rgba(98, 229, 255, 0.6);
+  box-shadow: 0 0 22px rgba(98, 229, 255, 0.25);
 }
 
-.primary-button:hover {
-  box-shadow:
-    0 18px 48px rgba(129, 101, 255, 0.38),
-    0 0 30px rgba(98, 229, 255, 0.28);
+.btn-remove {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  min-width: 46px;
+  border: 1px solid rgba(255, 143, 177, 0.3);
+  border-radius: 12px;
+  background: rgba(255, 143, 177, 0.06);
+  color: #ff9fbd;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease;
 }
 
-.secondary-button:hover {
-  border-color: rgba(156, 177, 255, 0.34);
-  box-shadow: 0 0 22px rgba(129, 101, 255, 0.14);
+.btn-remove:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 143, 177, 0.16);
+  border-color: rgba(255, 143, 177, 0.55);
+  box-shadow: 0 0 20px rgba(255, 143, 177, 0.22);
 }
 
 .react-datepicker-wrapper,
@@ -234,6 +232,144 @@ select.field-control option {
 
 .react-datepicker-popper {
   z-index: 20;
+}
+
+.react-datepicker {
+  background-color: #0b0f1e;
+  border: 1px solid rgba(150, 170, 255, 0.2);
+  border-radius: 12px;
+  color: var(--text-main);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.react-datepicker__header {
+  background: rgba(16, 20, 38, 0.95);
+  border-bottom: 1px solid rgba(150, 170, 255, 0.14);
+  padding-top: 0.75rem;
+}
+
+.react-datepicker__day-names,
+.react-datepicker__current-month,
+.react-datepicker-time__header,
+.react-datepicker__day-name {
+  color: #dfe6ff;
+}
+
+.react-datepicker__day {
+  color: #c9d2f0;
+  border-radius: 8px;
+}
+
+.react-datepicker__day:hover {
+  background-color: rgba(98, 229, 255, 0.18);
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background-color: var(--accent-violet);
+  color: #ffffff;
+}
+
+.react-datepicker__day--outside-month {
+  color: rgba(201, 210, 240, 0.35);
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: #9fb0e8;
+}
+
+.react-datepicker__navigation:hover .react-datepicker__navigation-icon::before {
+  border-color: #ffffff;
+}
+
+.download-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+  padding-bottom: 4px;
+}
+
+.download-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 32px;
+  height: 54px;
+  border: 1px solid rgba(98, 229, 255, 0.45);
+  border-radius: 12px;
+  cursor: pointer;
+  overflow: hidden;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #f3f8ff;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background:
+    linear-gradient(130deg, rgba(98, 229, 255, 0.3) 0%, rgba(129, 101, 255, 0.34) 100%),
+    linear-gradient(180deg, rgba(15, 20, 42, 0.96), rgba(8, 11, 26, 0.96));
+  background-size: 200% 200%;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    0 0 28px rgba(98, 229, 255, 0.16),
+    0 0 44px rgba(129, 101, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition:
+    transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 220ms ease,
+    border-color 220ms ease,
+    background-position 400ms ease;
+}
+
+.download-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.16) 50%,
+    transparent 80%
+  );
+  transform: translateX(-120%);
+  transition: transform 620ms ease;
+  pointer-events: none;
+}
+
+.download-btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(98, 229, 255, 0.8);
+  background-position: 100% 50%;
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.5),
+    0 0 34px rgba(98, 229, 255, 0.3),
+    0 0 52px rgba(129, 101, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.download-btn:hover::after {
+  transform: translateX(120%);
+}
+
+.download-btn:active {
+  transform: translateY(0);
+}
+
+.download-btn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(98, 229, 255, 0.28),
+    0 0 34px rgba(129, 101, 255, 0.22);
+}
+
+.download-btn__icon,
+.download-btn__text {
+  display: inline-flex;
+  align-items: center;
 }
 
 @media (max-width: 768px) {
@@ -247,75 +383,9 @@ select.field-control option {
     align-items: stretch;
   }
 
-  .tape-prefix {
-    flex-basis: auto;
+  .btn-remove {
+    align-self: center;
   }
-
-  .primary-button {
-    width: 100%;
-  }
-}
-
-/* ─── Premium Download Button ─── */
-.download-wrap {
-  display: flex;
-  justify-content: center;
-  margin-top: 28px;
-  padding-bottom: 4px;
-}
-
-.download-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 0 32px;
-  height: 54px;
-  border: none;
-  border-radius: 15px;
-  cursor: pointer;
-  font-size: 0.97rem;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: 0.03em;
-  background: linear-gradient(
-    130deg,
-    #1a6eff 0%,
-    #0ea5ea 45%,
-    #22d8f5 100%
-  );
-  background-size: 200% 200%;
-  box-shadow:
-    0 4px 24px rgba(14, 165, 234, 0.45),
-    0 1px 3px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
-  transition:
-    transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 220ms ease,
-    background-position 400ms ease;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Shimmer sweep on hover */
-.download-wrap {
-  display: flex;
-  justify-content: center;
-  margin-top: 28px;
-}
-
-.download-btn {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 6px;
-  background-color: #007bff;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.download-btn:hover {
-  background-color: #0056b3;
 }
 
 @media (max-width: 480px) {
@@ -323,6 +393,6 @@ select.field-control option {
     width: 100%;
     max-width: 100%;
     padding: 0 20px;
-    border-radius: 14px;
+    border-radius: 12px;
   }
 }

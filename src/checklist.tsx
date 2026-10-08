@@ -333,8 +333,8 @@ const ChecklistForm = () => {
     const value = form[field.id];
 
     return (
-      <div key={field.id} className="flex flex-col text-white">
-        <label htmlFor={field.id} className="mb-1 text-sm font-medium">
+      <div key={field.id} className="field-shell">
+        <label htmlFor={field.id} className="field-label">
           {field.label}
         </label>
         {field.type === "select" ? (
@@ -342,7 +342,7 @@ const ChecklistForm = () => {
             id={field.id}
             value={value}
             onChange={handleChange}
-            className="rounded border border-gray-400 bg-white p-2 text-black"
+            className="field-control"
           >
             <option value="">-- Select --</option>
             {(field.options ?? ["YES", "NA"]).map((option) => (
@@ -369,14 +369,14 @@ const ChecklistForm = () => {
             }
             dateFormat="MM/dd/yyyy"
             placeholderText="Select Date"
-            className="rounded border border-gray-400 p-2 text-black"
+            className="field-control"
           />
         ) : (
           <input
             id={field.id}
             value={value}
             onChange={handleChange}
-            className="rounded border border-gray-400 bg-white p-2 text-black placeholder-gray-300"
+            className="field-control"
           />
         )}
       </div>
@@ -387,18 +387,31 @@ const ChecklistForm = () => {
     <div className="app-shell">
       <div className="app-bg">
         <BinaryOrbits
-          colors={["#8165ff", "#62e5ff"]}
+          colors={["#f4f6ff", "#cfd8ff"]}
           backgroundColor="transparent"
-          tilt={62}
-          roll={-8}
-          stars={50000}
-          glow={0.5}
-          depth={0.4}
+          tilt={72}
+          roll={-10}
+          scale={0.8}
+          centerY={0.5}
+          stars={24000}
+          starSize={1.5}
+          armStrength={0.82}
+          sparkle={0.3}
+          dust={0.4}
+          core={1}
+          coreSize={0.065}
+          glow={0.22}
+          depth={0.3}
+          speed={0.7}
+          twinkle={0.3}
+          interactive={false}
+          hoverWake={false}
+          clickRipple={false}
         />
       </div>
 
-      <div className="neon-border-card relative z-10 w-full max-w-xl rounded-2xl bg-black/80 p-8 text-white shadow-[0_0_40px_rgba(0,0,0,0.15)]">
-        <h2 className="mb-4 text-center text-xl font-bold">{CHECKLIST_TITLE}</h2>
+      <div className="glass-card relative z-10 w-full max-w-3xl">
+        <h2 className="card-title">{CHECKLIST_TITLE}</h2>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 items-start">
           {fields.map((field) => {
@@ -409,26 +422,27 @@ const ChecklistForm = () => {
                 <Fragment key={field.id}>
                   {fieldElement}
                   <div className="mt-4 md:col-span-2 flex flex-col items-center">
-                    <label className="mb-2 text-center font-semibold text-white">
+                    <label className="field-label mb-2 text-center">
                       Correct tape/component:
                     </label>
-                    <div className="space-y-2">
+                    <div className="tape-stack w-full max-w-xl">
                       {tapes.map((tape, index) => (
-                        <div key={index} className="mt-2 flex justify-center">
+                        <div key={index} className="tape-row">
                           <input
                             type="text"
                             value={tape}
                             placeholder="Tape"
                             onChange={(e) => handleTapeChange(index, e.target.value)}
-                            className="w-full max-w-md rounded border bg-white p-2 text-black"
+                            className="field-control"
                           />
                           {tapes.length > 1 && (
                             <button
                               type="button"
                               onClick={() => removeTape(index)}
-                              className="text-red-500"
+                              className="btn-remove"
+                              aria-label="Remove tape"
                             >
-                              ❌
+                              ✕
                             </button>
                           )}
                         </div>
@@ -438,9 +452,9 @@ const ChecklistForm = () => {
                     <button
                       type="button"
                       onClick={addTape}
-                      className="mt-2 text-blue-400 hover:text-blue-300 transition-colors"
+                      className="btn-ghost mt-3"
                     >
-                      ➕ Add Tape
+                      + Add Tape
                     </button>
                   </div>
                 </Fragment>
@@ -452,15 +466,15 @@ const ChecklistForm = () => {
               return (
                 <Fragment key={field.id}>
                   {fieldElement}
-                  <div className="flex flex-col text-white">
-                    <label htmlFor="oecsr" className="mb-1 text-sm font-medium">
+                  <div className="field-shell">
+                    <label htmlFor="oecsr" className="field-label">
                       OE CSR
                     </label>
                     <select
                       id="oecsr"
                       value={form.oecsr}
                       onChange={handleChange}
-                      className="rounded border border-gray-400 bg-white p-2 text-black"
+                      className="field-control"
                     >
                       <option value="">-- Select --</option>
                       <option value="Owaiz">Owaiz</option>

@@ -77,7 +77,7 @@ uniform float uCoreSize;
 uniform float uColMul;
 uniform vec3 uColInner;
 uniform vec3 uColOuter;
-uniform vec3 uColWarm;
+uniform vec3 uColTint;
 uniform vec4 uRipple;
 uniform vec3 uPointer;
 
@@ -118,7 +118,7 @@ void main() {
   float x2 = p.x * cr - y1 * sr;
   float y2 = p.x * sr + y1 * cr;
 
-  float persp = 1.0 / (1.0 - 0.35 * z1);
+  float persp = 1.0 / (1.0 - 0.25 * z1);
   vec2 screen = uCenter + vec2(x2, y2) * persp * uUnit * uScale;
 
   gl_Position = vec4(
@@ -132,16 +132,18 @@ void main() {
   float b = aL.y;
   b *= 1.0 + uTwinkle * 0.55 * sin(uClock * (1.6 + fract(aS.z * 3.17) * 4.4) + aS.z * 87.0);
   b *= 1.0 - smoothstep(0.78, 1.0, abs(stream));
-  b *= 1.0 + uCore * 2.0 * exp(-aP.x / max(uCoreSize * 3.5, 0.015));
+  b *= 1.0 - smoothstep(0.8, 1.0, aP.x);
+  b *= 1.0 - 0.32 * smoothstep(0.45, 1.0, aP.x);
+  b *= 1.0 + uCore * 2.6 * exp(-aP.x / max(uCoreSize * 1.7, 0.012));
   b *= mix(1.0, smoothstep(-0.9, 0.25, z1), uDepth);
   b += rip * 1.3 + wake;
 
   vec3 col = mix(uColInner, uColOuter, smoothstep(0.08, 0.9, aP.x));
-  col = mix(col, uColWarm, aS.w * (1.0 - min(abs(off), 1.0)) * 0.65);
+  col = mix(col, uColTint, aS.w * 0.8);
   col = mix(
     col,
     vec3(1.0),
-    clamp(uCore * 1.3 * exp(-aP.x / max(uCoreSize * 2.2, 0.012)), 0.0, 0.9)
+    clamp(uCore * 1.35 * exp(-aP.x / max(uCoreSize * 1.6, 0.01)), 0.0, 0.92)
   );
   col *= uColMul;
 
@@ -190,7 +192,7 @@ void main() {
   vec2 t = vec2(pc.x * cr - pc.y * sr, pc.x * sr + pc.y * cr);
   t.y /= max(cos(uGlowTilt), 0.12);
   float d = length(t);
-  float g = (exp(-d * 2.4) * 0.42 + exp(-d * 6.5) * 0.7) * uGlowAmt * uGlowInt;
+  float g = (exp(-d * 5.5) * 0.3 + exp(-d * 14.0) * 0.85) * uGlowAmt * uGlowInt;
   gl_FragColor = vec4(uGlowColor, clamp(g, 0.0, 1.0));
 }
 `;
@@ -267,15 +269,26 @@ function buildStars(
   const pitch = twist * 0.92;
   const gauss = () => (rand() + rand() + rand() + rand() - 2) * 0.5;
   const voidR = Math.min(Math.max(innerVoid, 0), 0.6);
+  const expA = 0.4;
+  const bulgeP = 0.16;
+  const bulgeR = 0.15;
+  const diskR0 = 0.1;
+  const sampleR = () => {
+    if (rand() < bulgeP) return Math.pow(rand(), 1.9) * bulgeR;
+    const u = rand();
+    const x = -expA * Math.log(1 - u * (1 - Math.exp(-1 / expA)));
+    return diskR0 + (1 - diskR0) * x;
+  };
 
   for (let i = 0; i < n; i++) {
-    let r = Math.pow(rand(), 0.45);
-    while (r < voidR) r = Math.pow(rand(), 0.45);
+    let r = sampleR();
+    while (r < voidR) r = sampleR();
 
     const arm = Math.floor(rand() * arms);
     const armAngle = arm * armStep - pitch * Math.log(r + 0.06);
 
     let scatter = gauss();
+    scatter = Math.sign(scatter) * Math.pow(Math.abs(scatter), 1.4);
     if (dust > 0 && scatter > -0.55 && scatter < 0.05 && rand() < dust * 0.9) {
       scatter = -0.55 - dust * 0.9 * rand();
     }
@@ -287,8 +300,7 @@ function buildStars(
     const size = (0.55 + 0.9 * rand()) * (isSpark ? 2.0 : 1.0);
     const bright = (0.45 + 0.55 * rand()) * (isSpark ? 1.55 : 1.0);
     const tw = rand();
-    const warm =
-      (1 - Math.min(Math.abs(scatter), 1)) * (0.35 + 0.65 * rand());
+    const tint = rand() < 0.68 ? 0 : 0.45 + 0.55 * rand();
 
     const o = i * 10;
     data[o] = r;
@@ -298,7 +310,7 @@ function buildStars(
     data[o + 4] = phase;
     data[o + 5] = size;
     data[o + 6] = tw;
-    data[o + 7] = warm;
+    data[o + 7] = tint;
     data[o + 8] = armAngle;
     data[o + 9] = bright;
   }
@@ -376,7 +388,7 @@ const STAR_UNIFORMS = [
   "uColMul",
   "uColInner",
   "uColOuter",
-  "uColWarm",
+  "uColTint",
   "uRipple",
   "uPointer",
 ];
@@ -392,33 +404,33 @@ const GLOW_UNIFORMS = [
 ];
 
 export default function BinaryOrbits({
-  colors = ["#7B4DFF", "#FFC2EE"],
+  colors = ["#f4f6ff", "#cfd8ff"],
   backgroundColor = "#0A0A0A",
   mode = "auto",
-  stars = 70000,
-  starSize = 1.7,
-  sparkle = 0.5,
+  stars = 24000,
+  starSize = 1.5,
+  sparkle = 0.3,
   arms = 3,
   twist = 3.5,
-  armStrength = 0.5,
-  dust = 0.5,
+  armStrength = 0.82,
+  dust = 0.4,
   core = 1,
-  coreSize = 0.07,
+  coreSize = 0.065,
   innerVoid = 0,
   thickness = 0.02,
-  tilt = 62,
-  roll = -8,
-  scale = 1,
+  tilt = 72,
+  roll = -10,
+  scale = 0.8,
   centerX = 0.5,
   centerY = 0.52,
-  speed = 1,
-  twinkle = 0.35,
-  depth = 0.4,
-  glow = 0.45,
+  speed = 0.7,
+  twinkle = 0.3,
+  depth = 0.3,
+  glow = 0.22,
   intensity = 1,
-  interactive = true,
-  hoverWake = true,
-  clickRipple = true,
+  interactive = false,
+  hoverWake = false,
+  clickRipple = false,
   wakeStrength = 1,
   rippleStrength = 1,
   hoverBoost = 0.5,
@@ -593,18 +605,18 @@ export default function BinaryOrbits({
     const uploadStars = () => {
       const c = cfgRef.current;
       const data = buildStars(
-        Math.max(1, Math.floor(c.stars ?? 70000)),
+        Math.max(1, Math.floor(c.stars ?? 24000)),
         Math.max(1, Math.floor(c.arms ?? 3)),
         c.twist ?? 3.5,
-        c.sparkle ?? 0.5,
+        c.sparkle ?? 0.3,
         c.innerVoid ?? 0,
         c.thickness ?? 0.02,
-        c.dust ?? 0.5,
+        c.dust ?? 0.4,
         c.seed ?? 1
       );
       gl.bindBuffer(gl.ARRAY_BUFFER, starBuf);
       gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-      env.count = Math.max(1, Math.floor(c.stars ?? 70000));
+      env.count = Math.max(1, Math.floor(c.stars ?? 24000));
     };
     uploadStars();
 
@@ -641,22 +653,18 @@ export default function BinaryOrbits({
 
       const boostInt = 1 + ptr.boost * 0.6;
       const inten = (c.intensity ?? 1) * boostInt;
-      const band = 1.0 + (0.16 - 1.0) * Math.min(Math.max(c.armStrength ?? 0.5, 0), 1);
+      const band = 1.0 + (0.16 - 1.0) * Math.min(Math.max(c.armStrength ?? 0.82, 0), 1);
       const streamAmp = Math.min(0.55, band * 0.55);
 
-      const inner = parseHex(c.colors?.[1] ?? "#FFC2EE") ?? [1, 1, 1];
-      const outer = parseHex(c.colors?.[0] ?? "#7B4DFF") ?? [1, 1, 1];
-      const warm: [number, number, number] = [
-        inner[0] + (1.0 - inner[0]) * 0.55,
-        inner[1] + (0.47 - inner[1]) * 0.55,
-        inner[2] + (0.86 - inner[2]) * 0.55,
-      ];
+      const inner = parseHex(c.colors?.[1] ?? "#cfd8ff") ?? [1, 1, 1];
+      const outer = parseHex(c.colors?.[0] ?? "#f4f6ff") ?? [1, 1, 1];
+      const tint: [number, number, number] = [0.58, 0.6, 1.0];
       const colMul = ink ? 0.4 : 1;
       const center: [number, number] = [
         (c.centerX ?? 0.5) * w,
         (c.centerY ?? 0.52) * h,
       ];
-      const unit = Math.min(w, h) * 0.42;
+      const unit = Math.min(w * 0.53, h * 0.95);
 
       gl.viewport(0, 0, bw, bh);
       gl.clearColor(0, 0, 0, 0);
@@ -669,10 +677,10 @@ export default function BinaryOrbits({
         gl.useProgram(glowProg);
         const L = env.glowLoc;
         gl.uniform2f(L.uGlowCenter, center[0] * dpr, bh - center[1] * dpr);
-        gl.uniform1f(L.uGlowUnit, unit * (c.scale ?? 1) * dpr);
-        gl.uniform1f(L.uGlowRoll, (c.roll ?? -8) * DEG);
-        gl.uniform1f(L.uGlowTilt, (c.tilt ?? 62) * DEG);
-        gl.uniform1f(L.uGlowAmt, c.glow ?? 0.45);
+        gl.uniform1f(L.uGlowUnit, unit * (c.scale ?? 0.8) * dpr);
+        gl.uniform1f(L.uGlowRoll, (c.roll ?? -10) * DEG);
+        gl.uniform1f(L.uGlowTilt, (c.tilt ?? 72) * DEG);
+        gl.uniform1f(L.uGlowAmt, c.glow ?? 0.22);
         gl.uniform1f(L.uGlowInt, inten);
         gl.uniform3f(
           L.uGlowColor,
@@ -693,25 +701,25 @@ export default function BinaryOrbits({
       gl.uniform1f(L.uSpin, t.spin);
       gl.uniform1f(L.uClock, t.clock);
       gl.uniform2f(L.uRes, w, h);
-      gl.uniform1f(L.uTilt, (c.tilt ?? 62) * DEG);
-      gl.uniform1f(L.uRoll, (c.roll ?? -8) * DEG);
+      gl.uniform1f(L.uTilt, (c.tilt ?? 72) * DEG);
+      gl.uniform1f(L.uRoll, (c.roll ?? -10) * DEG);
       gl.uniform1f(L.uArmBand, band);
       gl.uniform1f(L.uStreamAmp, streamAmp);
-      gl.uniform1f(L.uRigid, 0.045);
-      gl.uniform1f(L.uScale, c.scale ?? 1);
+      gl.uniform1f(L.uRigid, 0.035);
+      gl.uniform1f(L.uScale, c.scale ?? 0.8);
       gl.uniform2f(L.uCenter, center[0], center[1]);
       gl.uniform1f(L.uUnit, unit);
-      gl.uniform1f(L.uStarSize, c.starSize ?? 1.7);
+      gl.uniform1f(L.uStarSize, c.starSize ?? 1.5);
       gl.uniform1f(L.uDpr, dpr);
-      gl.uniform1f(L.uTwinkle, c.twinkle ?? 0.35);
-      gl.uniform1f(L.uDepth, c.depth ?? 0.4);
+      gl.uniform1f(L.uTwinkle, c.twinkle ?? 0.3);
+      gl.uniform1f(L.uDepth, c.depth ?? 0.3);
       gl.uniform1f(L.uIntensity, inten);
       gl.uniform1f(L.uCore, c.core ?? 1);
-      gl.uniform1f(L.uCoreSize, c.coreSize ?? 0.07);
+      gl.uniform1f(L.uCoreSize, c.coreSize ?? 0.065);
       gl.uniform1f(L.uColMul, colMul);
       gl.uniform3f(L.uColInner, inner[0], inner[1], inner[2]);
       gl.uniform3f(L.uColOuter, outer[0], outer[1], outer[2]);
-      gl.uniform3f(L.uColWarm, warm[0], warm[1], warm[2]);
+      gl.uniform3f(L.uColTint, tint[0], tint[1], tint[2]);
       gl.uniform4f(L.uRipple, rip.x, rip.y, rip.t0, rip.s);
       gl.uniform3f(L.uPointer, ptr.x, ptr.y, ptr.wake);
 
@@ -789,16 +797,16 @@ export default function BinaryOrbits({
     const rect = root.getBoundingClientRect();
     if (rect.width <= 0 || rect.height <= 0) return null;
     const c = cfgRef.current;
-    const unit = Math.min(rect.width, rect.height) * 0.42 * (c.scale ?? 1);
+    const unit = Math.min(rect.width * 0.53, rect.height * 0.95) * (c.scale ?? 0.8);
     if (unit <= 0) return null;
     const dx = (clientX - rect.left - (c.centerX ?? 0.5) * rect.width) / unit;
     const dy = (clientY - rect.top - (c.centerY ?? 0.52) * rect.height) / unit;
-    const r = (c.roll ?? -8) * DEG;
+    const r = (c.roll ?? -10) * DEG;
     const cr = Math.cos(-r);
     const sr = Math.sin(-r);
     const ux = dx * cr - dy * sr;
     const uy = dx * sr + dy * cr;
-    const ct = Math.cos((c.tilt ?? 62) * DEG);
+    const ct = Math.cos((c.tilt ?? 72) * DEG);
     return [ux, uy / Math.max(ct, 0.1)];
   };
 
