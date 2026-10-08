@@ -54,14 +54,21 @@ body {
   z-index: 1;
   border-radius: 20px;
   padding: clamp(24px, 3.4vw, 36px);
-  background: linear-gradient(180deg, rgba(10, 13, 26, 0.78), rgba(6, 8, 17, 0.88));
-  border: 1px solid rgba(150, 170, 255, 0.14);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background:
+    radial-gradient(
+      125% 98% at 50% 46%,
+      rgba(6, 8, 20, 0.48) 0%,
+      rgba(9, 12, 28, 0.34) 58%,
+      rgba(13, 17, 36, 0.2) 100%
+    ),
+    linear-gradient(180deg, rgba(16, 20, 42, 0.12), rgba(4, 6, 14, 0.18));
+  border: 1px solid rgba(150, 170, 255, 0.2);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
   box-shadow:
     0 24px 70px rgba(0, 0, 0, 0.55),
-    0 0 46px rgba(98, 229, 255, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 0 60px rgba(129, 101, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .glass-card::before {
@@ -115,7 +122,9 @@ body {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: rgba(8, 11, 28, 0.76);
+  background: rgba(8, 11, 28, 0.58);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: var(--text-main);
   outline: none;
   padding: 0.85rem 1rem;
@@ -134,7 +143,7 @@ body {
 
 .field-control:hover {
   border-color: rgba(156, 177, 255, 0.3);
-  background: rgba(10, 14, 34, 0.84);
+  background: rgba(10, 14, 34, 0.72);
 }
 
 .field-control:focus {
